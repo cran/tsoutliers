@@ -1,0 +1,37 @@
+
+export(
+calendar.effects,
+coefs2poly,
+jarque.bera.test,
+locate.outliers,
+locate.outliers.iloop,
+locate.outliers.oloop,
+outliers.tstatistics,
+outliers.effects,
+outliers.regressors,
+plot.tsoutliers,
+remove.outliers,
+tsoutliers0,
+tsoutliers,
+outliers
+)
+
+S3method(coefs2poly, default)
+S3method(coefs2poly, Arima)
+S3method(jarque.bera.test, default)
+S3method(jarque.bera.test, Arima)
+S3method(outliers.regressors, default)
+S3method(outliers.regressors, ArimaPars)
+S3method(outliers.regressors, stsmSS)
+S3method(outliers.tstatistics, default)
+S3method(outliers.tstatistics, ArimaPars)
+S3method(outliers.tstatistics, stsmSS)
+S3method(plot, tsoutliers)
+S3method(print, mhtest)
+S3method(print, tsoutliers)
+
+importFrom(forecast, auto.arima)
+importFrom(KFKSDS, KF)
+import(polynom)
+import(stsm)
+import(stsm.class)
