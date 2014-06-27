@@ -2,7 +2,7 @@
 export(
 calendar.effects,
 coefs2poly,
-jarque.bera.test,
+JarqueBera.test,
 locate.outliers,
 locate.outliers.iloop,
 locate.outliers.oloop,
@@ -11,15 +11,15 @@ outliers.effects,
 outliers.regressors,
 plot.tsoutliers,
 remove.outliers,
-tsoutliers0,
-tsoutliers,
+tso0,
+tso,
 outliers
 )
 
 S3method(coefs2poly, default)
 S3method(coefs2poly, Arima)
-S3method(jarque.bera.test, default)
-S3method(jarque.bera.test, Arima)
+S3method(JarqueBera.test, default)
+S3method(JarqueBera.test, Arima)
 S3method(outliers.regressors, default)
 S3method(outliers.regressors, ArimaPars)
 S3method(outliers.regressors, stsmSS)

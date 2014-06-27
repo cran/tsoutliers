@@ -59,7 +59,7 @@ containing by columns each outlier.
 
 \seealso{
 \code{\link{locate.outliers}}, \code{\link{remove.outliers}}, 
-\code{\link{tsoutliers}}.
+\code{\link{tso}}.
 }
 
 \references{

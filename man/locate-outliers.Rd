@@ -106,7 +106,7 @@ are given by columns respectively for each outlier.
 
 \note{
 The default critical value, \code{cval}, is set equal to \eqn{3.5} and, 
-hence, it is not based on the sample size as in functions \code{\link{tsoutliers}} 
+hence, it is not based on the sample size as in functions \code{\link{tso}} 
 or \code{\link{locate.outliers.oloop}}.
 %this function is mainly an internal functions but it is exported 
 %for debugging and to allow the interested user to more easily track 
@@ -121,7 +121,7 @@ if \code{pars} is related to a structural time series model.
 \code{\link{locate.outliers.oloop}},
 \code{\link{locate.outliers.iloop}}, 
 \code{\link{outliers.tstatistics}}, 
-\code{\link{tsoutliers}}.
+\code{\link{tso}}.
 }
 
 \references{

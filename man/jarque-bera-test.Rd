@@ -1,8 +1,8 @@
-\name{jarque.bera.test}
-\alias{jarque.bera.test}
+\name{JarqueBera.test}
+\alias{JarqueBera.test}
 \alias{print.mhtest}
-%\alias{jarque.bera.test.default}
-%\alias{jarque.bera.test.Arima}
+%\alias{JarqueBera.test.default}
+%\alias{JarqueBera.test.Arima}
 
 \title{Jarque-Bera Test for Normality}
 
@@ -11,7 +11,7 @@ This function applies the test for normality proposed in Jarque and Bera (1980).
 }
 
 \usage{
-jarque.bera.test(x, fc = 3.5, ...)
+JarqueBera.test(x, fc = 3.5, ...)
 }
 
 \arguments{
@@ -74,18 +74,18 @@ serial independence of residuals}.
 data("hicp")
 y <- log(hicp[["011600"]])
 fit1 <- arima(y, order = c(0, 1, 0), seasonal = list(order = c(2, 0, 1)))
-jarque.bera.test(fit1)
-jarque.bera.test(residuals(fit1))
+JarqueBera.test(fit1)
+JarqueBera.test(residuals(fit1))
 
 # fit ARIMA model for the same series including outliers that were
-# detected by "tsoutliers" and for the model chosen by "auto.arima"
+# detected by "tso" and for the model chosen by "auto.arima"
 # normality of the residuals is not rejected at the 5% significance level
 # after including the presence of outliers
 mo <- outliers(c("AO", "AO", "LS", "LS"), c(79, 210, 85, 225))
 xreg <- outliers.effects(mo, length(y))
 fit2 <- arima(y, order = c(1, 1, 0), seasonal = list(order = c(2, 0, 2)), 
   xreg = xreg)
-jarque.bera.test(fit2)
+JarqueBera.test(fit2)
 }
 
 \keyword{ts, htest}

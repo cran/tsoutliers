@@ -10,7 +10,7 @@ remove.outliers <- function(x, y, cval = NULL,
   # arguments "tsmethod" and "args.tsmethod" (and "args.tsmodel" for "stsm")
   # could be added in order to provide an alternative to argument "tsmethod.call"
   # as way to pass the necessary information;
-  # the same that is done in function "tsoutliers" could be done here,
+  # the same that is done in function "tso" could be done here,
   # it would involve dealing again with default values for the fitting method 
   # and for the structural model if "stsm" is selected and the code of this function 
   # would get overly cumbersome; 
@@ -34,7 +34,7 @@ remove.outliers <- function(x, y, cval = NULL,
   method <- match.arg(method)
 
   # default critical value 
-  # (same as in functions "tsoutliers" and "locate.outliers.oloop")
+  # (same as in functions "tso" and "locate.outliers.oloop")
 
   if (is.null(cval))
   {
@@ -302,7 +302,7 @@ stopifnot(length(id) > 1)
     }
 
     ##NOTE 
-    # used by tsoutliers() to get the stsm object 
+    # used by tso() to get the stsm object 
     # (the linear regression does not return the "stsm" model)
 ##FIXME
 stopifnot(!is.null(tsmethod.call$m))

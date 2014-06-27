@@ -1,6 +1,6 @@
 Package: tsoutliers
-Version: 0.3
-Date: 2014-05-17
+Version: 0.4
+Date: 2014-06-27
 Title: Automatic Detection of Outliers in Time Series
 Description: This package implements a procedure based on the approach described 
     in Chen and Liu (1993) for automatic detection of outliers in time series. 
@@ -13,6 +13,6 @@ Imports: forecast, polynom, stsm, stsm.class, KFKSDS
 NeedsCompilation: no
 Encoding: UTF-8
 License: GPL-2
-Packaged: 2014-06-03 15:03:50 UTC; javlacalle
+Packaged: 2014-06-27 19:25:57 UTC; javlacalle
 Repository: CRAN
-Date/Publication: 2014-06-17 02:14:07
+Date/Publication: 2014-06-28 01:58:09

@@ -94,7 +94,7 @@ A list containing the following elements:
 }
 
 \seealso{
-\code{\link{locate.outliers}}, \code{\link{tsoutliers}}.
+\code{\link{locate.outliers}}, \code{\link{tso}}.
 }
 
 \references{

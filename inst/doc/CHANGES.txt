@@ -1,4 +1,20 @@
 
+Version: 0.4 2014-06-26
+------------------------
+
+  o The function 'tsoutliers' has been renamed as 
+    'tso' to avoid conflict with the function of the same name 
+    in package 'forecast'. To keep resemblance in the names, 
+    the function 'tsoutliers0' has been renamed as 'tso0'.
+
+  o The function 'jarque.bera.test' has been renamed as 
+    'JarqueBera.test' to avoid conflict with the function of 
+    the same name in package 'tseries'.
+
+  o function 'plot.tsoutliers': fixed "plot(cbind(x$y, x$yadj), ..."
+    a typo ("x$adj" instead of "x$yadj") made the range of the y-axis 
+    not cover the range of the original and adjusted series in some cases.
+
 Version: 0.3 2014-05-17
 ------------------------
 

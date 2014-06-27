@@ -56,7 +56,7 @@ A matrix containing the regressors by columms.
 
 \seealso{
 \code{\link{locate.outliers}}, \code{\link{outliers}}, 
-\code{\link{outliers.tstatistics}}, \code{\link{tsoutliers}}.
+\code{\link{outliers.tstatistics}}, \code{\link{tso}}.
 }
 
 \references{

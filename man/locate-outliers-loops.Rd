@@ -100,11 +100,11 @@ In \code{locate.outliers.iloop}
 the default critical value, \code{cval}, is set equal to \eqn{3.5} and, 
 hence, it is not based on the sample size.
 \code{locate.outliers.oloop} uses a default critical value based on the 
-sampel size as in \code{\link{tsoutliers}}.  
+sampel size as in \code{\link{tso}}.  
 }
 
 \seealso{
-\code{\link{outliers.tstatistics}}, \code{\link{tsoutliers}}.
+\code{\link{outliers.tstatistics}}, \code{\link{tso}}.
 }
 
 \references{

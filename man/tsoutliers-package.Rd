@@ -27,11 +27,11 @@ is implemented in the package \pkg{tsoutliers}.
 The procedure may in turn be run along with the automatic ARIMA model 
 selection strategy available in the package \pkg{forecast}.
 
-The function \code{\link{tsoutliers}} is the main interface for the 
+The function \code{\link{tso}} is the main interface for the 
 automatic procedure. The functions \code{\link{locate.outliers.oloop}}
 and \code{\link{remove.outliers}} implement respectively the first and 
 second stages of the procedure. In practice, the user may stick to use 
-the function \code{\link{tsoutliers}}. 
+the function \code{\link{tso}}. 
 
 Although the purpose of the package is to provide an automatic procedure, 
 the implementation allows the user to do a manual inspection of each 
@@ -43,10 +43,10 @@ enhancements.
 %functions specialised in a stage or substage of the procedure. 
 The functions \code{\link{locate.outliers.oloop}} and \code{\link{remove.outliers}} 
 implement the major steps of the procedure.
-\code{\link{tsoutliers}} is the main interface to the automatic procedure. 
+\code{\link{tso}} is the main interface to the automatic procedure. 
 All the options at any stage of the procedure can be defined through the 
-arguments passed to \code{\link{tsoutliers}}.
-Despite the user may stick to use the function \code{\link{tsoutliers}},
+arguments passed to \code{\link{tso}}.
+Despite the user may stick to use the function \code{\link{tso}},
 other functions called by this main interface are exported in the namespace of 
 the package. They are helpful for debugging and allow the interested user to more 
 easily track each step of the procedure.

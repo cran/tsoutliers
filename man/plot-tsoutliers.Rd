@@ -4,7 +4,7 @@
 \title{Display Outlier Effects Detected by \code{tsoutliers}}
 
 \description{
-This function displays the output from function \code{\link{tsoutliers}}. 
+This function displays the output from function \code{\link{tso}}. 
 }
 
 \usage{
@@ -19,7 +19,7 @@ This function displays the output from function \code{\link{tsoutliers}}.
 }
 
 \arguments{
-\item{x}{a list of class \code{tsoutliers} as returned by \code{\link{tsoutliers}}.}
+\item{x}{a list of class \code{tsoutliers} as returned by \code{\link{tso}}.}
 \item{args.lines.y}{a list. Arguments passed to \code{\link[graphics]{lines}} to 
 customize the line displaying the original series.}
 \item{args.lines.yadj}{a list. Arguments passed to \code{\link[graphics]{lines}} to 
@@ -59,7 +59,7 @@ None.
 }
 
 \seealso{
-\code{\link{tsoutliers}}.
+\code{\link{tso}}.
 }
 
 \keyword{hplot}

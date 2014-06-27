@@ -2,7 +2,7 @@
 # types of outliers
 # types = c("IO", "AO", "LS", "TC", "SLS")
 
-tsoutliers <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
+tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   types = c("AO", "LS", "TC"), 
   maxit = 1, maxit.iloop = 4, cval.reduce = 0.14286, 
   remove.method = c("en-masse", "bottom-up", "linear-regression"),
@@ -66,9 +66,9 @@ tsoutliers <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
 
   # default critical value
   # the same is done in functions "locate.outliers.oloop" and "remove.outliers"
-  # "cval" is passed as a non-null value from tsoutliers() to those functions
+  # "cval" is passed as a non-null value from tso() to those functions
   # but keep there this block so that default value is used when those functions 
-  # are called outside tsoutliers()
+  # are called outside tso()
 
   if (is.null(cval))
   {
@@ -90,7 +90,7 @@ tsoutliers <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   # "res" is overwritten until no more outliers are found 
   # "res0" is also used if maxit = 1
 
-  res0 <- res <- tsoutliers0(x = y, xreg = xreg, cval = cval, 
+  res0 <- res <- tso0(x = y, xreg = xreg, cval = cval, 
     delta = delta, n.start = n.start,
     types = types, maxit.iloop = maxit.iloop, 
     remove.method = remove.method, remove.cval = remove.cval,
@@ -109,11 +109,11 @@ tsoutliers <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
 
     # save "res" to have a copy of the last fitted model, res$fit;
     # if in the current run no outliers are found then 
-    # tsoutliers0() does not return the fitted model
+    # tso0() does not return the fitted model
 
     res0 <- res
 
-    res <- tsoutliers0(x = res$yadj, xreg = xreg, cval = cval, 
+    res <- tso0(x = res$yadj, xreg = xreg, cval = cval, 
       delta = delta, n.start = n.start,
       types = types, maxit.iloop = maxit.iloop, 
       remove.method = remove.method, remove.cval = remove.cval, 
@@ -196,7 +196,7 @@ tsoutliers <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
     class = "tsoutliers")
 }
 
-tsoutliers0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
+tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
   types = c("AO", "LS", "TC"), maxit.iloop = 4, 
   remove.method = c("en-masse", "bottom-up", "linear-regression"),
   remove.cval = NULL, 

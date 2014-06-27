@@ -120,7 +120,8 @@ plot.tsoutliers <- function(x,
   on.exit(par(oldpar))
 
   #do.call("plot", args = c(list(x = cbind(x$y, x$adj)), args.plot))
-  plot(cbind(x$y, x$adj), type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
+  plot(cbind(x$y, x$yadj), plot.type ="single", 
+    type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
   mtext(side = 3, text = "Original and adjusted series", adj = 0)
 
   do.call("lines", args = c(list(x = x$y), args.lines.y))
@@ -142,7 +143,7 @@ plot.tsoutliers <- function(x,
   }
 
   # bty = "u" is necessary to avoid the horizontal line between both plots 
-  # looks ticker because of overlap between the lower side of top plot's box
+  # looks thicker because of overlap between the lower side of top plot's box
   # and upper side of bottom plot's box
 
   plot(x$effects, type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "u")

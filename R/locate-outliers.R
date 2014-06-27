@@ -155,7 +155,7 @@ locate.outliers.iloop <- function(resid, pars, cval = 3.5,
     # hicp[["foodpr"]] with model ARIMA(0,1,1)(0,1,1))
     # the number of outliers increased doing this here;
     # see if it is necessary remove consectuive LS in in function 
-    # "tsoutliers0" or "tsoutliers"
+    # "tso0" or "tso"
     # if (iter > 0)
     #   moall <- rmconLS(moall)
 
@@ -199,7 +199,7 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
   # get the series "y"
 
   # default critical value 
-  # (same as in functions "tsoutliers" and "locate.outliers.oloop")
+  # (same as in functions "tso" and "locate.outliers.oloop")
   
   if (is.null(cval))
   {
@@ -324,7 +324,7 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
 
       # this reuses arguments passed to the optimization method, e.g. method = "CSS",
       # if they were specified when the input object "fit" was created,
-      # (for example through argument "args.tsmethod" of function "tsoutliers")
+      # (for example through argument "args.tsmethod" of function "tso")
 
       "arima" = {
         fitcall <- fit$call

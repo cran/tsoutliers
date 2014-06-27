@@ -1,6 +1,6 @@
-\name{tsoutliers}
-\alias{tsoutliers}
-\alias{tsoutliers0}
+\name{tso}
+\alias{tso}
+\alias{tso0}
 \alias{print.tsoutliers}
 
 \title{Automatic Procedure for Detection of Outliers}
@@ -11,14 +11,14 @@ procedure provided in this package.
 }
 
 \usage{
-tsoutliers(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
+tso(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   types = c("AO", "LS", "TC"), 
   maxit = 1, maxit.iloop = 4, cval.reduce = 0.14286, 
   remove.method = c("en-masse", "bottom-up", "linear-regression"),
   remove.cval = NULL, 
   tsmethod = c("auto.arima", "arima", "stsm"), 
   args.tsmethod = NULL, args.tsmodel = NULL, logfile = NULL)
-tsoutliers0(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
+tso0(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
   types = c("AO", "LS", "TC"), maxit.iloop = 4, 
   remove.method = c("en-masse", "bottom-up", "linear-regression"),
   remove.cval = NULL,   
@@ -65,20 +65,20 @@ and \code{"TC"} temporary changes are selected;
 \code{"IO"} innovative outliers and \code{"SLS"} seasonal level shifts 
 can also be selected.
 
-\code{tsoutliers0} is mostly a wrapper function around the functions 
+\code{tso0} is mostly a wrapper function around the functions 
 \code{\link{locate.outliers}} and \code{\link{remove.outliers}}.
 
-\code{tsoutliers} iterates around \code{tsoutliers0} first for the original series 
+\code{tso} iterates around \code{tso0} first for the original series 
 and then for the adjusted series. The process stops if no additional outliers 
 are found in the current iteration or if \code{maxit} iterations are reached.
 
-\code{tsoutliers0} is an auxiliar function (it is the workhorse for \code{tsoutliers} 
+\code{tso0} is an auxiliar function (it is the workhorse for \code{tso} 
 but it is not intended to be called directly by the user,
-use \code{tsoutliers(maxit = 1, ...)} instead.
-\code{tsoutliers0} does not check the arguments since they are assumed to be passed 
-already checked by \code{tsoutliers}; the default value for \code{cval} is not based 
+use \code{tso(maxit = 1, ...)} instead.
+\code{tso0} does not check the arguments since they are assumed to be passed 
+already checked by \code{tso}; the default value for \code{cval} is not based 
 on the sample size.
-For the time being, \code{tsoutliers0} is exported in the NAMESPACE since it 
+For the time being, \code{tso0} is exported in the NAMESPACE since it 
 is convenient for debugging.
 
 If no value is specified for argument \code{cval} a default value based on the sample size 
@@ -106,9 +106,9 @@ it must be a one-column matrix.
   
 The external regressors (if any) should be defined in the argument \code{xreg}.
 However, they may be also defined as an element in \code{args.tsmethod} since this list 
-is passed to function that fits the model. The function \code{tsoutliers} 
+is passed to function that fits the model. The function \code{tso} 
 deals with this possibility and returns a warning if \code{"xreg"} is defined 
-twice with different values. No checks are done in \code{tsoutliers0}.
+twice with different values. No checks are done in \code{tso0}.
   
 If \code{tsmethod = "stsm"}, the structural time series model can be defined 
 through argument \code{args.tsmodel}, which is passed to function 
@@ -171,7 +171,7 @@ Ministerio de Economía y Hacienda. Document number D-95006.
 \examples{
 \dontrun{
 data("hicp")
-tsoutliers(y = log(hicp[[1]]))
+tso(y = log(hicp[[1]]))
 }
 }
 

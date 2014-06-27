@@ -1,9 +1,9 @@
 
 # Based on function "tseries::jarque.bera.test"
 
-jarque.bera.test <- function(x, fc = 3.5, ...) UseMethod("jarque.bera.test")
+JarqueBera.test <- function(x, fc = 3.5, ...) UseMethod("JarqueBera.test")
 
-jarque.bera.test.Arima <- function(x, fc = 3.5, ...)
+JarqueBera.test.Arima <- function(x, fc = 3.5, ...)
 {
   resid <- residuals(x)
   s <- frequency(x$residuals)
@@ -18,10 +18,10 @@ jarque.bera.test.Arima <- function(x, fc = 3.5, ...)
   if (any(abs(resid[id0]) > fc * sd(resid[-id0])))
     resid <- resid[-id0]
 
-  jarque.bera.test(resid)
+  JarqueBera.test(resid)
 }
 
-jarque.bera.test.default <- function(x, ...)
+JarqueBera.test.default <- function(x, ...)
 {
   if (NCOL(x) > 1) 
     stop("x is not a vector or univariate time series")
