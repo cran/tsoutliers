@@ -1,0 +1,76 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\selectlanguage{english}
+
+\usepackage[colorlinks=true, citecolor=blue, 
+  linkcolor=blue, urlcolor=blue,
+  bookmarksopen=false, pdfpagemode=UseOutlines]{hyperref}
+
+\usepackage{Sweave}
+
+\renewcommand{\baselinestretch}{1.3}
+
+\topmargin -1.3cm
+\textheight 24cm
+\textwidth 15.5cm
+\oddsidemargin -0.5cm
+\evensidemargin 0.0cm
+
+\title{\textsf{R} Package \textsf{tsoutliers}}
+\author{Javier L\'opez-de-Lacalle}
+\date{January 2015}
+
+\begin{document}
+
+%\VignetteIndexEntry{tsoutliers-intro}
+%\VignetteKeyword{outliers, R, time series}
+%\VignetteDepends{tsoutliers}
+
+\maketitle
+
+\abstract{
+This is a minimal introduction to package \textsf{tsoutliers}. 
+Further information is available in the references given below.
+}
+
+\section{Introduction}
+
+Details about the methodology and algorithms implemented in the package are 
+given in \href{http://www.jalobe.com:8080/doc/tsoutliers.pdf}{this document}.
+
+%http://stats.stackexchange.com/questions/104882/detecting-outliers-in-time-series-ls-ao-tc-using-tsoutliers-package-in-r-how
+%http://stats.stackexchange.com/questions/108374/arima-intervention-transfer-function-how-to-visualize-the-effect
+
+As a preliminary introduction and discussion see these posts:
+\href{http://www.jalobe.com:8080/blog/tsoutliers/}{%
+http://www.jalobe.com:8080/blog/tsoutliers/} and 
+\href{http://stats.stackexchange.com/questions/104882/}{%
+http://stats.stackexchange.com/questions/104882/}.
+
+\paragraph{Examples}
+
+Fit a local level model to the Nile time series 
+and check for the presence of possible outliers (additive outliers, 
+level shifts or transitory changes):
+
+<<>>=
+library("tsoutliers")
+#~resNile1 <- tso(y = Nile, types = c("AO", "LS", "TC"),
+#~  tsmethod = "stsm", args.tsmodel = list(model = "local-level"))
+#~resNile1$fit$call$xreg <- NULL
+#~resNile1
+@
+
+Choose and fit an ARIMA model for the Nile time series 
+checking for the presence detect possible outliers 
+(additive outliers, level shifts or transitory changes):
+
+<<>>=
+resNile2 <- tso(y = Nile, types = c("AO", "LS", "TC"),
+  maxit = 1, remove.method = "bottom-up", tsmethod = "auto.arima",
+  args.tsmethod = list(allowdrift = FALSE, ic = "bic"))
+resNile2
+@
+
+\end{document}

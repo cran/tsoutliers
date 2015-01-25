@@ -1,11 +1,15 @@
 
-# types of outliers
-# types = c("IO", "AO", "LS", "TC", "SLS")
+##NOTE 
+# with tsmethod = "stsm", the element "xreg" could be defined in the 
+# object "stsm" instead of using argument "xreg" in "tso0". However, 
+# it is more convenient to let the function "stsm::stsmFit" handle this element;
+# in this way, the same arguments are passed to "stats::arima" and "stsmFit" 
+# and the code is simplified here avoiding "if" statements depending on "tsmethod"
 
 tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
-  types = c("AO", "LS", "TC"), 
+  types = c("AO", "LS", "TC"), # c("IO", "AO", "LS", "TC", "SLS")
   maxit = 1, maxit.iloop = 4, cval.reduce = 0.14286, 
-  remove.method = c("en-masse", "bottom-up", "linear-regression"),
+  remove.method = c("en-masse", "bottom-up"),
   remove.cval = NULL, 
   tsmethod = c("auto.arima", "arima", "stsm"), 
   args.tsmethod = NULL, args.tsmodel = NULL, logfile = NULL)
@@ -40,11 +44,15 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   if (tsmethod == "stsm")
   {
     if (is.null(args.tsmodel$model))
-      args.tsmodel$model <- ifelse(frequency(y) == 1, "local-level", "BSM")      
+      args.tsmodel$model <- ifelse(frequency(y) == 1, "local-level", "BSM")   
+
+##FIXME these defaults only if stsm.method = "maxlik.fd.scoring"
+
     if (is.null(args.tsmodel$ssd))
       args.tsmodel$ssd <- TRUE
     if (is.null(args.tsmodel$sgfc))
       args.tsmodel$sgfc <- TRUE
+    # let "stsm::stsmFit" handle "xreg", not here
     y <- do.call("stsm.model", args = c(list(y = y), args.tsmodel))
     #ylist <- list(m = m)
   } #else
@@ -61,7 +69,9 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
     args.tsmethod <- switch(tsmethod,
       "auto.arima" = list(allowdrift = FALSE, ic = "bic"),
       "arima" = list(order = c(0, 1, 1), seasonal = list(order = c(0, 1, 1))),
-      "stsm" = list(stsm.method = "maxlik.fd.scoring", step = NULL, information = "expected"))
+      "stsm" = list(stsm.method = "maxlik.td.optim", method = "L-BFGS-B",
+        KF.version = "KFKSDS", KF.args = list(P0cov = TRUE), gr = "numerical")) #hessian = TRUE
+      #list(stsm.method = "maxlik.fd.scoring", step = NULL, information = "expected"))
   }
 
   # default critical value
@@ -107,6 +117,12 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   {
 ##FIXME see move res0 <- res after if(...) break
 
+if (tsmethod == "stsm")
+{
+##FIXME TODO create stsm object based on res$yadj as done above
+  warning("currently ", sQuote("maxit"), " > 1 is not allowed for ", sQuote("tsmethod=\"stsm\""))
+  break
+}
     # save "res" to have a copy of the last fitted model, res$fit;
     # if in the current run no outliers are found then 
     # tso0() does not return the fitted model
@@ -135,7 +151,8 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   {
     pars <- switch(tsmethod, 
       "auto.arima" = , "arima" = coefs2poly(coef(res0$fit), res0$fit$arma, TRUE),
-      "stsm" = stsm.class::char2numeric(res0$fit$model))    
+#~      "stsm" = stsm::char2numeric(res0$fit$model)
+    )
 
     xreg.outl <- outliers.effects(mo = moall, n = n, weights = FALSE, delta = delta, 
       pars = pars, n.start = n.start, freq = frequency(y))
@@ -163,17 +180,18 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
 
   if (!is.null(xreg.outl))
   {
+    id <- colnames(xreg.outl)
     if (tsmethod == "stsm")
     {
 ##FIXME TODO 
 #if xregall!=xreg.outl (i.e. argument xreg is not NULL)
-      xregcoefs <- fit$xreg$coef
-      stde <- fit$xreg$stde
-      if (is.null(stde))
-        stde <- sqrt(diag(vcov(fit, type = "optimHessian")))
-      tstats <- xregcoefs / stde[names(xregcoefs)]
+#       xregcoefs <- fit$xreg$coef
+#       stde <- fit$xreg$stde
+#       if (is.null(stde))
+#         stde <- sqrt(diag(vcov(fit, type = "optimHessian")))
+      xregcoefs <- fit$pars[id]
+      tstats <- xregcoefs / fit$std.errors[id]
     } else { # method "auto.arima", "arima"
-      id <- colnames(xreg.outl)
       xregcoefs <- coef(fit)[id]
       tstats <- xregcoefs / sqrt(diag(fit$var.coef)[id])
     }
@@ -198,7 +216,7 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
 
 tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
   types = c("AO", "LS", "TC"), maxit.iloop = 4, 
-  remove.method = c("en-masse", "bottom-up", "linear-regression"),
+  remove.method = c("en-masse", "bottom-up"),
   remove.cval = NULL, 
   tsmethod = c("auto.arima", "arima", "stsm"), args.tsmethod = NULL,
   args.tsmodel = NULL, logfile = NULL)
@@ -209,15 +227,6 @@ tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
   y <- if(is.ts(x)) { x } else x@y
 
   #remove.method <- match.arg(remove.method)
-  if (remove.method == "linear-regression")
-  {
-    if (tsmethod != "stsm")
-      stop(sQuote("linear-regression"), 
-        " is implemented only for method ", sQuote("stsm"))
-    fdiff <- x@fdiff
-  } else
-    fdiff <- NULL
-
   #tsmethod <- match.arg(tsmethod)
   #remove.method <- match.arg(remove.method)
   fitmethod <- gsub("stsm", "stsmFit", tsmethod)
@@ -251,7 +260,7 @@ tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
   {
     stage2 <- remove.outliers(x = stage1, y = y, cval = remove.cval, 
       method = remove.method, delta = delta, n.start = n.start, 
-      tsmethod.call = fit$call, fdiff = fdiff, logfile = logfile)
+      tsmethod.call = fit$call, fdiff = NULL, logfile = logfile)
 
 #moall <- stage2$outliers
 stopifnot(ncol(stage2$xreg) == length(stage2$xregcoefs))

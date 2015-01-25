@@ -14,13 +14,13 @@ procedure provided in this package.
 tso(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   types = c("AO", "LS", "TC"), 
   maxit = 1, maxit.iloop = 4, cval.reduce = 0.14286, 
-  remove.method = c("en-masse", "bottom-up", "linear-regression"),
+  remove.method = c("en-masse", "bottom-up"),
   remove.cval = NULL, 
   tsmethod = c("auto.arima", "arima", "stsm"), 
   args.tsmethod = NULL, args.tsmodel = NULL, logfile = NULL)
 tso0(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
   types = c("AO", "LS", "TC"), maxit.iloop = 4, 
-  remove.method = c("en-masse", "bottom-up", "linear-regression"),
+  remove.method = c("en-masse", "bottom-up"),
   remove.cval = NULL,   
   tsmethod = c("auto.arima", "arima", "stsm"), args.tsmethod = NULL,
   args.tsmodel = NULL, logfile = NULL)
@@ -28,7 +28,10 @@ tso0(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
 
 \arguments{
 \item{y}{a time series where outliers are to be detected.}
-\item{x}{a time series or an \code{\link[stsm.class]{stsm}} object.}
+\item{x}{a time series or an 
+%~ \code{\link[stsm]{stsm}} 
+object.
+}
 \item{xreg}{an optional matrix of regressors with the same number of rows as \code{y}.}
 \item{cval}{a numeric. The critical value to determine the significance of each type of outlier.}
 \item{delta}{a numeric. Parameter of the temporary change type of outlier.}
@@ -53,7 +56,8 @@ of the function to which the arguments defined in \code{args.tsmethod} are refer
 \item{args.tsmethod}{an optional list containing arguments to be passed to 
 the function invoking the method selected in \code{tsmethod}.}
 \item{args.tsmodel}{an optional list containing the arguments to be passed to 
-\code{\link[stsm.class]{stsm.model}}. Only for \code{tsmethod = "stsm"}}.
+%~ \code{\link[stsm]{stsm.model}}
+. Only for \code{tsmethod = "stsm"}}.
 \item{logfile}{a character or \code{NULL}. It is the path to the file where 
 tracking information is printed. Ignored if \code{NULL}.}
 }
@@ -112,7 +116,8 @@ twice with different values. No checks are done in \code{tso0}.
   
 If \code{tsmethod = "stsm"}, the structural time series model can be defined 
 through argument \code{args.tsmodel}, which is passed to function 
-\code{\link[stsm.class]{stsm.model}}. 
+%~ \code{\link[stsm]{stsm.model}}
+.
 By default, the local level model is chosen for series with one sample per unit 
 of time (e.g. annual data) and the basic structural model for seasonal data; 
 \code{ssd = TRUE} and \code{sgfc = TRUE}.
@@ -165,7 +170,7 @@ Gómez, V. and Taguas, D. (1995).
 \emph{Detección y Corrección Automática de Outliers con TRAMO: 
 Una Aplicación al IPC de Bienes Industriales no Energéticos}.
 Ministerio de Economía y Hacienda. Document number D-95006.
-\url{http://www.sepg.pap.minhap.gob.es/sitios/sepg/es-ES/Presupuestos/Documentacion/Documents/DOCUMENTOS DE TRABAJO/D95006.pdf}
+\url{http://www.sepg.pap.minhap.gob.es/sitios/sepg/es-ES/Presupuestos/Documentacion/Documents/DOCUMENTOS\%20DE\%20TRABAJO/D95006.pdf}
 }
 
 \examples{

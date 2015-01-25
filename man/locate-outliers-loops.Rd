@@ -122,11 +122,7 @@ Gómez, V. and Taguas, D. (1995).
 \emph{Detección y Corrección Automática de Outliers con TRAMO: 
 Una Aplicación al IPC de Bienes Industriales no Energéticos}.
 Ministerio de Economía y Hacienda. Document number D-95006.
-\url{http://www.sepg.pap.minhap.gob.es/sitios/sepg/es-ES/Presupuestos/Documentacion/Documents/DOCUMENTOS DE TRABAJO/D95006.pdf}
-
-López-de-Lacalle, J. (2014). 
-\sQuote{Class and Methods for Structural Time Series Models}. \R package version 1.1. 
-\url{http://CRAN.R-project.org/package=stsm.class}
+\url{http://www.sepg.pap.minhap.gob.es/sitios/sepg/es-ES/Presupuestos/Documentacion/Documents/DOCUMENTOS\%20DE\%20TRABAJO/D95006.pdf}
 
 López-de-Lacalle, J. (2014). 
 \sQuote{Structural Time Series Models}. \R package version 1.2. 

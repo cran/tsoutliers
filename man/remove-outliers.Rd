@@ -10,7 +10,7 @@ in a time series model that is fitted including the outliers as regressor variab
 
 \usage{
 remove.outliers(x, y, cval = NULL, 
-  method = c("en-masse", "bottom-up", "linear-regression"), 
+  method = c("en-masse", "bottom-up"), 
   delta = 0.7, n.start = 50, tsmethod.call = NULL, 
   fdiff = NULL, logfile = NULL)
 }
@@ -29,8 +29,9 @@ series model.}
 %Omitted if \code{tsmethod.call} is not \code{NULL}.}
 %\item{args.tsmethod}{a list. Arguments to be passed to the function chosen to fit the time series model. 
 %Omitted if \code{tsmethod.call} is not \code{NULL}.}
-\item{fdiff}{an optional function. Differencing filter to be applied on the original data. 
-Used if \code{method="linear-regression"}.}
+%\item{fdiff}{an optional function. Differencing filter to be applied on the original data. 
+%Used if \code{method="linear-regression"}.}
+\item{fdiff}{currently ignored.}
 \item{logfile}{a character or \code{NULL}. It is the path to the file where 
 tracking information is printed. Ignored if \code{NULL}.}
 }
@@ -67,20 +68,20 @@ If after including a new outlier, e.g. the \eqn{i}-th outlier, the outliers that
 confirmed so far significant become not significant, then the \eqn{i}-th outlier is removed 
 regardless of the value of its \eqn{t}-statistic.
 %
-\item \code{"linear-regression"}: The original series and the outlier regressors are 
-differenced by means of the function \code{fdiff}. Then a linear regression of the the 
-differenced data on the differenced regressors is performed. Those outliers that are not significant 
-at the 5\% significant value are removed. The p-value from the linear regression is used, 
-not the critical value \code{cval}, which is omitted with this method.
+%\item \code{"linear-regression"}: The original series and the outlier regressors are 
+%differenced by means of the function \code{fdiff}. Then a linear regression of the the 
+%differenced data on the differenced regressors is performed. Those outliers that are not significant 
+%at the 5\% significant value are removed. The p-value from the linear regression is used, 
+%not the critical value \code{cval}, which is omitted with this method.
 }
 
 The \code{"bottom-up"} may be preferred to \code{"bottom-up"} when there are are several outliers
 since it may be hard to fit an ARIMA model with many regressor variables.
 
-The method \code{"linear-regression"} is an experimental version intended to be used 
-with \code{tsmethod = "stsm"}, where fitting the model with external regressors seems to be
-harder. In this method the critical value \code{cval} is not used, 
-the p-value of the t-statistics is used instead for the \eqn{5\%} significance level.
+%The method \code{"linear-regression"} is an experimental version intended to be used 
+%with \code{tsmethod = "stsm"}, where fitting the model with external regressors seems to be
+%harder. In this method the critical value \code{cval} is not used, 
+%the p-value of the t-statistics is used instead for the \eqn{5\%} significance level.
 }
 
 \value{

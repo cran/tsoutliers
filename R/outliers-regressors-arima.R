@@ -9,7 +9,7 @@ outliers.regressors.default <- function(pars, mo, n, weights = TRUE,
   msg <- paste("argument", sQuote("pars"), "should be of class", 
     sQuote("ArimaPars"), "or", sQuote("stsmSS"), 
     "\n       see", sQuote("?coefs2poly"), "in package", sQuote("tsoutliers"),
-    "or", sQuote("?char2numeric"), "in package", sQuote("stsm.class"))
+    "or", sQuote("?char2numeric"), "in package", sQuote("stsm"))
 
   #if (!inherits(pars, "ArimaPars") && !inherits(pars, "stsmSS"))
   #  stop(msg)

@@ -29,7 +29,7 @@ JarqueBera.test.default <- function(x, ...)
   # do this before na.omit(x)
   DNAME <- deparse(substitute(x))
 
-  #if (any(is.na(x))) 
+  #if (anyNA(x))) 
   #  stop("NAs in x")
   x <- na.omit(as.vector(x))
 

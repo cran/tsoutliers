@@ -27,7 +27,7 @@ outliers.effects <- function(mo, n, weights = FALSE, delta = 0.7,
     msg <- paste("argument", sQuote("pars"), "should be of class", 
       sQuote("ArimaPars"), "or", sQuote("stsmSS")) 
       #"\n       see", sQuote("?coefs2poly"), "in package", sQuote("tsoutliers"),
-      #"or", sQuote("?char2numeric"), "in package", sQuote("stsm.class"))
+      #"or", sQuote("?char2numeric"), "in package", sQuote("stsm"))
 
     if (inherits(pars, "list"))
     {
@@ -50,6 +50,7 @@ outliers.effects <- function(mo, n, weights = FALSE, delta = 0.7,
 
       m <- matrix(0, nrow = n, ncol = length(ind))
       m[n * seq.int(0, ncol(m) - 1) + ind] <- w
+##FIXME see na.omit in the presence of outliers in "x"
       m <- apply(m, 2, function(x, f, nm1) na.omit(filter(c(rep(0, nm1), x), 
         filter = f, method = "conv", sides = 1)), f = c(1, -mas), nm1 = n - 1)
     } else 

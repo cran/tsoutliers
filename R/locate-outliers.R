@@ -11,7 +11,8 @@ locate.outliers <- function(resid, pars, cval = 3.5,
 {
   # mean absolute deviation of residuals
 
-  sigma <- 1.483 * quantile(abs(resid - quantile(resid, probs = 0.5)), probs = 0.5)
+  sigma <- 1.483 * quantile(abs(resid - quantile(resid, probs = 0.5, na.rm = TRUE)), 
+    probs = 0.5, na.rm = TRUE)
   #n <- length(resid)
 
   # t-statistics (and coefficents) at every time point for the 
@@ -20,11 +21,19 @@ locate.outliers <- function(resid, pars, cval = 3.5,
   tmp <- outliers.tstatistics(pars = pars, resid = resid, 
     types = types, sigma = sigma, delta = delta, n.start = n.start)
 
-  ind <- which(abs(tmp[,,"tstat"]) > cval, arr.ind = TRUE)
+  #ind <- which(abs(tmp[,,"tstat"]) > cval, arr.ind = TRUE)
+  #mo <- data.frame(
+  #  factor(gsub("^(.*)tstats$", "\\1", dimnames(tmp)[[2]][ind[,2]]),
+  #    levels = c("IO", "AO", "LS", "TC", "SLS")), ind[,1],
+  #  tmp[,,"coefhat"][ind], tmp[,,"tstat"][ind])
+  #colnames(mo) <- c("type", "ind", "coefhat", "tstat")
+  #if (nrow(ind) == 1) # otherwise the row name is "row" instead of "1"
+  #  rownames(mo) <- NULL
+  ind <- which(abs(tmp[,,"tstat",drop=FALSE]) > cval, arr.ind = TRUE)
   mo <- data.frame(
     factor(gsub("^(.*)tstats$", "\\1", dimnames(tmp)[[2]][ind[,2]]),
       levels = c("IO", "AO", "LS", "TC", "SLS")), ind[,1],
-    tmp[,,"coefhat"][ind], tmp[,,"tstat"][ind])
+    tmp[,,"coefhat",drop=FALSE][ind], tmp[,,"tstat",drop=FALSE][ind])
 
   colnames(mo) <- c("type", "ind", "coefhat", "tstat")
   if (nrow(ind) == 1) # otherwise the row name is "row" instead of "1"
@@ -232,7 +241,7 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
   if (inherits(fit, "stsmFit")) {
     id0resid <- seq_len(n - length(fit$model@diffy))
   } else
-    stop("unexpected model output")
+    stop("unexpected type of fitted model")
 
   # begin outer loop
 
@@ -244,10 +253,14 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
 
     pars <- switch(tsmethod, 
       "auto.arima" = , "arima" = coefs2poly(coef(fit), fit$arma, TRUE),
-      "stsm" = stsm.class::char2numeric(fit$model))    
+#~      "stsm" = stsm::char2numeric(fit$model)
+    )
+    ##NOTE bu default residuals(fit, standardised = FALSE) 
+    # only relevant for "stsm" but the argument could set here 
+    # explicitly, it would be ignored if "fit" is an "Arima" object
     resid <- residuals(fit)
 
-    if (any(abs(resid[id0resid]) > 3.5 * sd(resid[-id0resid])))
+    if (any(abs(na.omit(resid[id0resid])) > 3.5 * sd(resid[-id0resid], na.rm = TRUE)))
     {
 ##FIXME
 # see add factor 3.5 as argument
@@ -336,14 +349,17 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
 
       "stsm" = {
         fitcall <- fit$call
-        fitcall$m@y <- y
-        dy <- fitcall$m@fdiff(y, frequency(y))
-        fitcall$m@diffy <- dy
-        if (!is.null(fitcall$m@ssd))
-          fitcall$m@ssd <- Mod(fft(as.numeric(dy)))^2 / (2*pi*length(dy))
+        ##NOTE
+        # fitcall$x contains the model, not fitcall$m, since now "stsmFit" is called 
+        # instead of "maxlik.td.optim" and the other functions
+        fitcall$x@y <- y
+        dy <- fitcall$x@fdiff(y, frequency(y))
+        fitcall$x@diffy <- dy
+        if (!is.null(fitcall$x@ssd))
+          fitcall$x@ssd <- Mod(fft(as.numeric(dy)))^2 / (2*pi*length(dy))
         ##NOTE
         #last parameter estimates, fit$pars, could be used as starting values
-        #fitcall$m@pars[] <- fit$pars
+        #fitcall$x@pars[] <- fit$pars
         fit <- eval(fitcall)
       }
     )

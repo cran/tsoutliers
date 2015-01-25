@@ -6,14 +6,14 @@ JarqueBera.test,
 locate.outliers,
 locate.outliers.iloop,
 locate.outliers.oloop,
+outliers,
 outliers.tstatistics,
 outliers.effects,
 outliers.regressors,
 plot.tsoutliers,
 remove.outliers,
 tso0,
-tso,
-outliers
+tso
 )
 
 S3method(coefs2poly, default)
@@ -34,4 +34,3 @@ importFrom(forecast, auto.arima)
 importFrom(KFKSDS, KF)
 import(polynom)
 import(stsm)
-import(stsm.class)

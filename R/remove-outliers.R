@@ -1,6 +1,6 @@
 
 remove.outliers <- function(x, y, cval = NULL, 
-  method = c("en-masse", "bottom-up", "linear-regression"), 
+  method = c("en-masse", "bottom-up"), 
   delta = 0.7, n.start = 50, tsmethod.call = NULL, 
   fdiff = NULL, logfile = NULL)
 {
@@ -114,11 +114,14 @@ remove.outliers <- function(x, y, cval = NULL,
       if (tsmethod == "stsm")
       {
         #print(fit, vcov.type = "optimHessian")
-        xregcoefs <- fit$xreg$coef
-        stde <- fit$xreg$stde
-        if (is.null(stde))
-          stde <- sqrt(diag(vcov(fit, type = "optimHessian")))
-        tstats <- xregcoefs / stde[names(xregcoefs)]
+        #xregcoefs <- fit$xreg$coef
+        #stde <- fit$xreg$stde
+        #if (is.null(stde))
+        #  stde <- sqrt(diag(vcov(fit, type = "optimHessian")))
+        #tstats <- xregcoefs / stde[names(xregcoefs)]
+        id <- colnames(xreg)
+        xregcoefs <- fit$pars[id]
+        tstats <- xregcoefs / fit$std.errors[id]
       } else { # method "auto.arima", "arima"        
         # "xreg" is not returned by arima (fit$call$xreg could be used)
         #id <- colnames(fit$xreg)
@@ -197,14 +200,16 @@ stopifnot(length(id) > 1)
       if (tsmethod == "stsm")
       {
         #print(fit, vcov.type = "optimHessian")
-        xregcoefs <- fit$xreg$coef
-        stde <- fit$xreg$stde
-        if (is.null(stde))
-          stde <- sqrt(diag(vcov(fit, type = "optimHessian")))
-        tstats <- xregcoefs / stde[names(xregcoefs)]
-
+        #xregcoefs <- fit$xreg$coef
+        #stde <- fit$xreg$stde
+        #if (is.null(stde))
+        #  stde <- sqrt(diag(vcov(fit, type = "optimHessian")))
+        #tstats <- xregcoefs / stde[names(xregcoefs)]
+        nms <- colnames(xregaux)
+        xregcoefs <- fit$pars[nms]
+        tstats <- xregcoefs / fit$std.errors[nms]
       } else { # method "auto.arima", "arima"
-        if (!inherits(fit, "try-error"))
+      if (!inherits(fit, "try-error"))
         {
           nms <- colnames(xregaux)
           xregcoefs <- coef(fit)[nms]
@@ -247,67 +252,6 @@ stopifnot(length(id) > 1)
       xreg <- xreg[,-idrm]
       moall <- moall[-idrm,]
     }
-  } else 
-  if (method == "linear-regression")
-  {
-    xregall <- cbind(xregfixed, xreg)
-    colnames(xregall) <- c(xregfixed.nms, colnames(xreg))
-
-##FIXME check with tsmethod.call$xreg != NULL
-    # v1
-    dxreg <- fdiff(xregall)
-    id <- length(y) - nrow(dxreg)
-    if (id > 0) {
-      e <- x$fit$resid[-seq_len(id)]
-    } else
-      e <- x$fit$resid
-    fite <- summary(lm(e ~ 0 + dxreg))
-    xregcoefs <- coef(fite)[,1]
-    tstats <- coef(fite)[,3]
-    names(xregcoefs) <- names(tstats) <- gsub("dxreg", "", names(xregcoefs))
-    id <- match(colnames(xreg), names(xregcoefs))
-    ref <- which(coef(fite)[id,4] > 0.05)
-
-##FIXME if this version is kept then argument "fdiff" is not necessary
-##NOTE
-# this version uses cval
-##FIXME TODO with tsmethod.call$xreg != NULL
-    # v2
-    #fit2 <- summary(lm(y ~ 0 + xreg))
-    # fix the name xregcoefs (this would name them as xregxreg1,...)
-    #xregcoefs <- coef(fit2)[,1]
-    #tstats <- coef(fit2)[,3]
-    #ref <- which(abs(tstats) < cval)
-
-    # remove those outliers that were not signifcant 
-    # at the 5% significance level
-    ##NOTE
-    # argument "cval" is not used here, 0.05 cannot be chosen, it could be set as argument
-
-    if (length(ref) > 0)
-    {
-      xreg <- xreg[,-ref] #rm(xregaux) # "xregaux" will not be in general a big object
-      moall <- moall[-ref,]
-      xregcoefs <- xregcoefs[-ref]
-      tstats <- tstats[-ref]
-
-##NOTE 
-#see if this should be done below or xreg with one column is already handled in othe cases
-      if (nrow(moall) == 1)
-      {
-        stopifnot(length(xregcoefs) == 1)
-        xreg <- cbind(xreg)
-        colnames(xreg) <- names(xregcoefs)
-      }
-    }
-
-    ##NOTE 
-    # used by tso() to get the stsm object 
-    # (the linear regression does not return the "stsm" model)
-##FIXME
-stopifnot(!is.null(tsmethod.call$m))
-    fit <- list(model = tsmethod.call$m)
-
   } #else # not necessary, it would be caught by match.arg(method) above
     #stop("unkown method")
 
