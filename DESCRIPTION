@@ -1,6 +1,6 @@
 Package: tsoutliers
-Version: 0.5
-Date: 2015-01-25
+Version: 0.6
+Date: 2015-01-27
 Title: Detection of Outliers in Time Series
 Description: Detection of outliers in time series following the 
     Chen and Liu (1993) procedure. Innovative outliers, additive outliers, 
@@ -13,6 +13,6 @@ NeedsCompilation: no
 Encoding: UTF-8
 License: GPL-2
 URL: http://jalobe.com
-Packaged: 2015-01-25 18:04:14 UTC; javlacalle
+Packaged: 2015-01-27 16:34:17 UTC; javlacalle
 Repository: CRAN
-Date/Publication: 2015-01-25 21:32:36
+Date/Publication: 2015-01-27 22:30:50

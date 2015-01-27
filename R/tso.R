@@ -151,8 +151,7 @@ if (tsmethod == "stsm")
   {
     pars <- switch(tsmethod, 
       "auto.arima" = , "arima" = coefs2poly(coef(res0$fit), res0$fit$arma, TRUE),
-#~      "stsm" = stsm::char2numeric(res0$fit$model)
-    )
+      "stsm" = stsm::char2numeric(res0$fit$model))
 
     xreg.outl <- outliers.effects(mo = moall, n = n, weights = FALSE, delta = delta, 
       pars = pars, n.start = n.start, freq = frequency(y))

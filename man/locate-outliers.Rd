@@ -95,7 +95,7 @@ differencing filter (if any). The function \code{\link{coefs2poly}} can be used 
 the argument \code{pars}. 
 For structural time series models that are fitted by means of the package \pkg{stsm}, 
 the function 
-%~ \code{\link[stsm]{char2numeric}} 
+\code{\link[stsm]{char2numeric}} 
 available in the 
 \pkg{stsm} package is the most convenient way to define the argument \code{pars}.
 }

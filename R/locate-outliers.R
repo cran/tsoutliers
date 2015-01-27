@@ -253,8 +253,8 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
 
     pars <- switch(tsmethod, 
       "auto.arima" = , "arima" = coefs2poly(coef(fit), fit$arma, TRUE),
-#~      "stsm" = stsm::char2numeric(fit$model)
-    )
+      "stsm" = stsm::char2numeric(fit$model))
+
     ##NOTE bu default residuals(fit, standardised = FALSE) 
     # only relevant for "stsm" but the argument could set here 
     # explicitly, it would be ignored if "fit" is an "Arima" object

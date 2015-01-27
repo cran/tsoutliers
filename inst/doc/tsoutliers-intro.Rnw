@@ -38,13 +38,13 @@ Further information is available in the references given below.
 
 Details about the methodology and algorithms implemented in the package are 
 given in \href{http://www.jalobe.com:8080/doc/tsoutliers.pdf}{this document}.
-
+%
 %http://stats.stackexchange.com/questions/104882/detecting-outliers-in-time-series-ls-ao-tc-using-tsoutliers-package-in-r-how
 %http://stats.stackexchange.com/questions/108374/arima-intervention-transfer-function-how-to-visualize-the-effect
-
-As a preliminary introduction and discussion see these posts:
+%
+As a preliminary introduction and discussion see these posts: \\
 \href{http://www.jalobe.com:8080/blog/tsoutliers/}{%
-http://www.jalobe.com:8080/blog/tsoutliers/} and 
+http://www.jalobe.com:8080/blog/tsoutliers/} and \\
 \href{http://stats.stackexchange.com/questions/104882/}{%
 http://stats.stackexchange.com/questions/104882/}.
 
@@ -56,10 +56,10 @@ level shifts or transitory changes):
 
 <<>>=
 library("tsoutliers")
-#~resNile1 <- tso(y = Nile, types = c("AO", "LS", "TC"),
-#~  tsmethod = "stsm", args.tsmodel = list(model = "local-level"))
-#~resNile1$fit$call$xreg <- NULL
-#~resNile1
+resNile1 <- tso(y = Nile, types = c("AO", "LS", "TC"),
+  tsmethod = "stsm", args.tsmodel = list(model = "local-level"))
+resNile1$fit$call$xreg <- NULL
+resNile1
 @
 
 Choose and fit an ARIMA model for the Nile time series 
@@ -68,7 +68,7 @@ checking for the presence detect possible outliers
 
 <<>>=
 resNile2 <- tso(y = Nile, types = c("AO", "LS", "TC"),
-  maxit = 1, remove.method = "bottom-up", tsmethod = "auto.arima",
+  remove.method = "bottom-up", tsmethod = "auto.arima",
   args.tsmethod = list(allowdrift = FALSE, ic = "bic"))
 resNile2
 @

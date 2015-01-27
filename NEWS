@@ -1,8 +1,14 @@
 
+Changes in version 0.6 2015-01-27
+-----------------------------------  
+
+  o The functionalities of package "stsm" has been restored now 
+    that the package "stsm" has been updated on CRAN.
+
 Changes in version 0.5 2015-01-25
 -----------------------------------  
 
-  o This is submitted to CRAN as a TRANSITORY VERSION where some 
+  o This is submitted to CRAN as a transitory version where some 
     functions related to package "stsm" are disabled.
     Package "stsm.class" has been merged into package "stsm".
     If the new version of "stsm" is submitted these warnings are obtained:
