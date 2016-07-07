@@ -1,4 +1,29 @@
 
+Changes in version 0.6-3 2016-07-07
+------------------------------------  
+
+  o Imported some functions in the NAMESPACE suggested by R CMD check.
+  
+  o Fixed some the link to some URLs given in the vignette.
+
+Changes in version 0.6-2 2015-05-18
+------------------------------------ 
+
+  o Development version not submitted to CRAN.
+
+  o Updated the function "coefs2poly" in order to deal with ARIMA 
+    models that apply the regular difference operator two times, I(2).
+    Email Michael Dothan, May 18, 2015.
+    Email Diego Selle, November 24, 2015.
+
+Changes in version 0.6-1 2015-04-15
+------------------------------------  
+
+  o Development version not submitted to CRAN.
+
+  o Imported stats::filter in DESCRIPTION and NAMESPACE files in order to avoid conflict 
+    with dply::filter. Thanks to Nathan Kugland, Derek Holmes and Eric Goldsmith for reporting this.
+
 Changes in version 0.6 2015-01-27
 -----------------------------------  
 

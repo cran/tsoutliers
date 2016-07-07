@@ -122,7 +122,7 @@ res$outliers
 # the outliers is not significant (method = "en-masse")
 remove.outliers(res, y, method = "en-masse", 
   tsmethod.call = fit$call)$outliers
-# in this case, using method = "bottom-up" the firt four 
+# in this case, using method = "bottom-up" the first four 
 # outliers with higher t-statistic are kept
 remove.outliers(res, y, method = "bottom-up", 
   tsmethod.call = fit$call)$outliers

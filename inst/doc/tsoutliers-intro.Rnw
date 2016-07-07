@@ -19,12 +19,12 @@
 
 \title{\textsf{R} Package \textsf{tsoutliers}}
 \author{Javier L\'opez-de-Lacalle}
-\date{January 2015}
+\date{July 2016}
 
 \begin{document}
 
 %\VignetteIndexEntry{tsoutliers-intro}
-%\VignetteKeyword{outliers, R, time series}
+%\VignetteKeyword{outliers, time series}
 %\VignetteDepends{tsoutliers}
 
 \maketitle
@@ -37,14 +37,14 @@ Further information is available in the references given below.
 \section{Introduction}
 
 Details about the methodology and algorithms implemented in the package are 
-given in \href{http://www.jalobe.com:8080/doc/tsoutliers.pdf}{this document}.
+given in \href{http://www.jalobe.com/doc/tsoutliers.pdf}{this document}.
 %
 %http://stats.stackexchange.com/questions/104882/detecting-outliers-in-time-series-ls-ao-tc-using-tsoutliers-package-in-r-how
 %http://stats.stackexchange.com/questions/108374/arima-intervention-transfer-function-how-to-visualize-the-effect
 %
 As a preliminary introduction and discussion see these posts: \\
-\href{http://www.jalobe.com:8080/blog/tsoutliers/}{%
-http://www.jalobe.com:8080/blog/tsoutliers/} and \\
+\href{http://www.jalobe.com/blog/tsoutliers/}{%
+http://www.jalobe.com/blog/tsoutliers/} and \\
 \href{http://stats.stackexchange.com/questions/104882/}{%
 http://stats.stackexchange.com/questions/104882/}.
 

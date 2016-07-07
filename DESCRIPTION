@@ -1,18 +1,18 @@
 Package: tsoutliers
-Version: 0.6
-Date: 2015-01-27
+Version: 0.6-3
+Date: 2016-07-07
 Title: Detection of Outliers in Time Series
 Description: Detection of outliers in time series following the 
-    Chen and Liu (1993) procedure. Innovative outliers, additive outliers, 
+    Chen and Liu (1993) procedure. Innovational outliers, additive outliers, 
     level shifts, temporary changes and seasonal level shifts are considered.
 Author: Javier López-de-Lacalle <javlacalle@yahoo.es>
 Maintainer: Javier López-de-Lacalle <javlacalle@yahoo.es>
 Depends: R (>= 3.0.0)
-Imports: forecast, polynom, stsm, KFKSDS
+Imports: forecast, polynom, stsm, KFKSDS, stats
 NeedsCompilation: no
 Encoding: UTF-8
 License: GPL-2
 URL: http://jalobe.com
-Packaged: 2015-01-27 16:34:17 UTC; javlacalle
+Packaged: 2016-07-07 21:09:42 UTC; javlacalle
 Repository: CRAN
-Date/Publication: 2015-01-27 22:30:50
+Date/Publication: 2016-07-07 23:44:57

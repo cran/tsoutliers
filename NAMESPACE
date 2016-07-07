@@ -30,7 +30,15 @@ S3method(plot, tsoutliers)
 S3method(print, mhtest)
 S3method(print, tsoutliers)
 
-importFrom(forecast, auto.arima)
-importFrom(KFKSDS, KF)
-import(polynom)
-import(stsm)
+importFrom("forecast", "auto.arima")
+importFrom("KFKSDS", "KF")
+import("polynom")
+import("stsm")
+importFrom("stats", "filter")
+
+importFrom("graphics", "mtext", "par", "plot")
+importFrom("stats", "ARMAtoMA", "arima", "coef", "cycle", "diffinv",
+  "end", "fft", "frequency", "is.ts", "na.omit", "pchisq",
+  "pnorm", "quantile", "residuals", "sd", "start", "time",
+  "ts", "tsp", "tsp<-", "window")
+importFrom("utils", "capture.output", "tail")

@@ -72,6 +72,22 @@ coefs2poly.default <- function(x, morder, add = TRUE, ...)
     }
   }
 
+  if (isTRUE(add) && morder[6] == 2)
+  {
+    #multiply arcoefs by (1 - L)
+    if (length(arcoefs) == 0) {
+      arcoefs <- c(2, -1)
+    } else {
+      # multiply (1 - arcoefs(L)) by (1 - L)^2
+      # based on package "polynom"
+      # it is assumed that 'arcoefs' are related to consecutive lags
+      tmp <- outer(c(1, -arcoefs), c(1, -2, 1))
+      arcoefs <- as.vector(tapply(tmp, row(tmp) + col(tmp), sum))
+      # remove L^0 = 1 and move to the right hand side of the equation
+      arcoefs <- -arcoefs[-1]
+    }
+  }
+
   if (isTRUE(add) && morder[7] == 1)
   {
     # multiply arcoefs by (1 - L)
@@ -89,7 +105,7 @@ coefs2poly.default <- function(x, morder, add = TRUE, ...)
   }
 
 ##FIXME TODO
-  if (morder[6] > 1)
+  if (morder[6] > 2)
     stop("unsupported number of regular differences.")
   if (morder[7] > 1)
     stop("unsupported number of seasonal differences.")
