@@ -1,10 +1,55 @@
 
+Changes in version 0.6-5 2016-12-08
+------------------------------------  
+
+  o Created "find.consecutive.outliers" to find outliers that were detected 
+    at consecutive time points by "locate.outliers.oloop" and "locate.outliers.iloop".
+    If is called within the inner and outer loops and now also by "remove.outliers", 
+    so that the whole set of outliers is also checked (not only those at the 
+    current inner or outer iterations).
+    The outlier with the highest t-statistic in absolute value is kept 
+    and the others are discarded. 
+    This is done for all types of outliers, before it was done only for LS.
+
+  o "coefs2poly" has been rebuilt. The code has been simplified using 
+    the output x$model$phi and x$model$theta from stats::arima().
+
+  o Note: the following change in R 3.2.1,
+    'arima(*, xreg = .) (for d >= 1) computes estimated variances based on a the 
+    number of effective observations as in R version 3.0.1 and earlier. (PR#16278)',
+    may lead to changes in the results returned by 'tso'. 
+    I have observed that in some examples of the manual the same coefficient 
+    estimates are obtained, but the standard errors change slightly compared to 
+    the version from November 2014. 
+    This is most likely due to the above-mentioned change in 'arima' and may 
+    affect the t-statistics that are used for the detection of outliers: 
+    e.g., the example 'resAirp' in the documentation reported 4 outliers in the 
+    version from November 2014, now and additional outlier LS39 is obtained.
+
+  o remove.outliers(remove.method="bottom-up"): the coefficients and t-statistics 
+    are also updated in "moall".
+    
+  o remove.outliers(remove.method="en-masse"): if outliers are discarded then the 
+    model is refit without the discarded outliers and the coefficients and 
+    t-statistics in "moall" are updated.
+    
+  o When 'maxit' is greater than 1 in tso(), duplicates and outliers at consecutive 
+    type points (if any) are discarded keeping the outlier from the older iteration.
+
+Changes in version 0.6-4 2016-07-28
+------------------------------------  
+
+  o Development version distributed to some users (not submitted to CRAN). 
+
+  o Fix in "locate.outliers": in some instances consecutive LS were not removed correctly.
+    Thanks to Paymon Ashourian for reporting this issue.
+
 Changes in version 0.6-3 2016-07-07
 ------------------------------------  
 
   o Imported some functions in the NAMESPACE suggested by R CMD check.
   
-  o Fixed some the link to some URLs given in the vignette.
+  o Fixed the link to some URLs given in the vignette.
 
 Changes in version 0.6-2 2015-05-18
 ------------------------------------ 
@@ -27,7 +72,7 @@ Changes in version 0.6-1 2015-04-15
 Changes in version 0.6 2015-01-27
 -----------------------------------  
 
-  o The functionalities of package "stsm" has been restored now 
+  o The functionalities of package "stsm" have been restored now 
     that the package "stsm" has been updated on CRAN.
 
 Changes in version 0.5 2015-01-25

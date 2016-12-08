@@ -75,7 +75,7 @@ regardless of the value of its \eqn{t}-statistic.
 %not the critical value \code{cval}, which is omitted with this method.
 }
 
-The \code{"bottom-up"} may be preferred to \code{"bottom-up"} when there are are several outliers
+The option \code{"en-masse"} may be preferred to \code{"bottom-up"} when there are are several outliers,
 since it may be hard to fit an ARIMA model with many regressor variables.
 
 %The method \code{"linear-regression"} is an experimental version intended to be used 

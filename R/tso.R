@@ -17,7 +17,7 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   tsmethod <- match.arg(tsmethod)
   remove.method <- match.arg(remove.method)
   attr.y <- attributes(y)
-  n <- length(y) #attr.y$tsp[2]
+  n <- length(y)
   yname <- deparse(substitute(y))
   #stopifnot(is.ts(y))
 
@@ -107,12 +107,14 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
     tsmethod = tsmethod, args.tsmethod = args.tsmethod, 
     logfile = logfile)
 
+  fit.wo.outliers <- res$fit0 # model without outliers (if maxit>1 res0 may change)
   moall <- res$outliers
   outtimes <- res$times
 
   iter <- 1
   cval <- round(cval * (1 - cval.reduce), 2)
 
+  if (nrow(moall) > 1)
   while (iter < maxit)
   {
 ##FIXME see move res0 <- res after if(...) break
@@ -136,9 +138,27 @@ if (tsmethod == "stsm")
       tsmethod = tsmethod, args.tsmethod = args.tsmethod, 
       logfile = logfile)
 
+##FIXME check
+    #discard (remove) duplicates and outliers at consecutive type points (if any)
+    #
+    #do not discard according to abs(t-stat) because the detection of outliers 
+    #are based on res$yadj (not the original series); discarding an outlier 
+    #from a previous iteration would require changing the current res$yadj
+    #
+    #discard outliers at an observation where an outlier (of the same or other type)
+    #was detected in a previous iteration
+    id <- which(res$outliers[,"ind"] %in% res0$outliers[,"ind"])
+    if (length(id) > 0)
+      res$outliers <- res$outliers[id,]
+    #discard consecutive outliers of any type, keep the outlier from previous iterations
+    id <- which(apply(outer(res$outliers[,"ind"], res0$outliers[,"ind"], "-"), MARGIN=1, 
+      FUN = function(x) any(x == 1)))
+    if (length(id) > 0)
+      res$outliers <- res$outliers[id,]
+
     if (nrow(res$outliers) == 0)
       break
-    
+
     moall <- rbind(moall, res$outliers)
     outtimes <- c(outtimes, res$times)
     
@@ -149,36 +169,36 @@ if (tsmethod == "stsm")
 
   if (nrow(moall) > 0)
   {
+    #NOTE 'pars' is relevant only for innovational outliers, 
+    #when 'maxit'>1, see if it would be better to use 'res' instead of 'res0',
+    #preferably it should be based on 'pars' from a model for the original data 
+    #rather than the series adjusted for outliers
+
     pars <- switch(tsmethod, 
-      "auto.arima" = , "arima" = coefs2poly(coef(res0$fit), res0$fit$arma, TRUE),
+      "auto.arima" = , "arima" = coefs2poly(res0$fit),
       "stsm" = stsm::char2numeric(res0$fit$model))
+
+    # 'xreg': input regressor variables such as calendar effects (if any)
+    # 'xreg.outl': outliers regressor variables detected above (if any)
+    # 'xregall': all regressors ('xreg' and 'xreg.outl')
 
     xreg.outl <- outliers.effects(mo = moall, n = n, weights = FALSE, delta = delta, 
       pars = pars, n.start = n.start, freq = frequency(y))
-  } else 
-    xreg.outl <- NULL
+    xregall <- cbind(xreg, xreg.outl)
+    nms.outl <- colnames(xreg.outl)
+    colnames(xregall) <- c(colnames(xreg), nms.outl)
 
-  # all regressors
-  # xreg: input regressor variables such as calendar effects (if any)
-  # xreg.outl: outliers regressor variables detected above (if any)
+    ##NOTE
+    # rerunning "auto.arima" (model selection) may not be necessary at this point
 
-  xregall <- cbind(xreg, xreg.outl)
-  nms.outl <- colnames(xreg.outl)
-  colnames(xregall) <- c(colnames(xreg), nms.outl)
+    if (tsmethod == "stsm") {
+      fit <- do.call("stsmFit", args = c(list(x = y, xreg = xregall), args.tsmethod))
+    } else {
+      fit <- do.call(tsmethod, args = c(list(x = y, xreg = xregall), args.tsmethod))
+      # this is for proper printing of results from "auto.arima" and "arima"
+      fit$series <- yname
+    }
 
-  ##NOTE
-  # rerunning "auto.arima" may not be necessary at this point
-
-  if (tsmethod == "stsm") {
-    fit <- do.call("stsmFit", args = c(list(x = y, xreg = xregall), args.tsmethod))
-  } else {
-    fit <- do.call(tsmethod, args = c(list(x = y, xreg = xregall), args.tsmethod))
-    # this is for proper printing of results from "auto.arima" and "arima"
-    fit$series <- yname
-  }
-
-  if (!is.null(xreg.outl))
-  {
     id <- colnames(xreg.outl)
     if (tsmethod == "stsm")
     {
@@ -204,6 +224,7 @@ if (tsmethod == "stsm")
     yadj <- if(is.ts(y)) y - oeff else y@y - oeff
 
   } else { # no outliers detected
+    fit <- fit.wo.outliers
     oeff <- NULL
     yadj <- if(is.ts(y)) y else y@y
   }
@@ -235,6 +256,7 @@ tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
 
   # fit time series model
 
+  fit.wo.outliers <- 
   fit <- do.call(fitmethod, args = c(list(x = x, xreg = xreg), args.tsmethod))
   #fit$series <- deparse(substitute(y))
 
@@ -267,14 +289,15 @@ stopifnot(ncol(stage2$xreg) == length(stage2$xregcoefs))
     stage2 <- list(xreg = NULL, fit = stage1$fit)
 
   # final outliers and
-  # linearized series, original series without outlier effects
+  # original series adjusted for the outlier effects
 
   if (!is.null(stage2$xreg))
   {
     # stage2$fit$xreg is not returned by arima()
     moall <- stage2$outliers
-    moall[,"coefhat"] <- stage2$xregcoefs
-    moall[,"tstat"] <- stage2$xregtstats
+    ##NOTE changed 2016Nov12 after changes in remove.outliers(), "moall" is updated there
+    #moall[,"coefhat"] <- stage2$xregcoefs
+    #moall[,"tstat"] <- stage2$xregtstats
 
     oeff <- stage2$xreg %*% cbind(stage2$xregcoefs)
     attributes(oeff) <- attributes(y)
@@ -312,6 +335,7 @@ stopifnot(ncol(stage2$xreg) == length(stage2$xregcoefs))
   }
 
   structure(list(outliers = moall, y = y, yadj = yadj, cval = cval,
+    fit0 = fit.wo.outliers, # initial model fitted without outliers
     fit = stage2$fit, effects = oeff, times = outtimes), 
     class = "tsoutliers")
 }

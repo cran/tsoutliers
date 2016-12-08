@@ -64,6 +64,7 @@ Chen, C. and Liu, Lon-Mu (1993).
 \sQuote{Joint Estimation of Model Parameters and Outlier Effects in Time Series}.
 \emph{Journal of the American Statistical Association},
 \bold{88}(421), pp. 284-297.
+\doi{10.2307/2290724}
 
 Gómez, V. and Maravall, A. (1996). 
 \emph{Programs TRAMO and SEATS. Instructions for the user}.
@@ -86,7 +87,7 @@ George Athanasopoulos, Slava Razbash, Drew Schmidt, Zhenyu Zhou, Yousaf Khan,
 Christoph Bergmeir and Earo Wang (2014). 
 \sQuote{\pkg{forecast}: Forecasting functions for time series and linear models}.
 \R package version 5.4. 
-\url{http://CRAN.R-project.org/package=forecast}
+\url{https://CRAN.R-project.org/package=forecast}
 }
 
 \keyword{package, ts}

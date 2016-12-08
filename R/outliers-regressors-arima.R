@@ -93,9 +93,11 @@ outliers.regressors.ArimaPars <- function(pars, mo, n, weights = TRUE,
     mI <- matrix(0, nrow = n, ncol = length(ind))
     mI[n * seq.int(0, ncol(mI) - 1) + ind] <- 1
 
-    madmL <- coef(polynomial(c(1, ma)) * polynomial(c(1, -delta)))[-1]
+    #tmp <- coef(polynom::polynomial(c(1, ma)) * polynom::polynomial(c(1, -delta)))[-1]
+    madmL <- convolve(c(1, ma), c(-delta, 1), type="open")[-1]
+    #stopifnot(all.equal(madmL, tmp, check.names=FALSE))
     ftc <- c(1, ARMAtoMA(-madmL, -ar, n-1))
-    
+
     for (i in seq_along(ind))
     {
       mI[,i] <- w[i] * na.omit(filter(c(rep(0, n-1), mI[,i]), 

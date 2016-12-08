@@ -24,7 +24,8 @@
 \begin{document}
 
 %\VignetteIndexEntry{tsoutliers-intro}
-%\VignetteKeyword{outliers, time series}
+%\VignetteKeyword{outliers}
+%\VignetteKeyword{time series}
 %\VignetteDepends{tsoutliers}
 
 \maketitle

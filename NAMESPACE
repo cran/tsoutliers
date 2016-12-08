@@ -2,6 +2,7 @@
 export(
 calendar.effects,
 coefs2poly,
+find.consecutive.outliers,
 JarqueBera.test,
 locate.outliers,
 locate.outliers.iloop,
@@ -11,13 +12,11 @@ outliers.tstatistics,
 outliers.effects,
 outliers.regressors,
 plot.tsoutliers,
+print.tsoutliers,
 remove.outliers,
 tso0,
-tso
-)
+tso)
 
-S3method(coefs2poly, default)
-S3method(coefs2poly, Arima)
 S3method(JarqueBera.test, default)
 S3method(JarqueBera.test, Arima)
 S3method(outliers.regressors, default)
@@ -32,12 +31,11 @@ S3method(print, tsoutliers)
 
 importFrom("forecast", "auto.arima")
 importFrom("KFKSDS", "KF")
-import("polynom")
 import("stsm")
 importFrom("stats", "filter")
 
 importFrom("graphics", "mtext", "par", "plot")
-importFrom("stats", "ARMAtoMA", "arima", "coef", "cycle", "diffinv",
+importFrom("stats", "ARMAtoMA", "arima", "coef", "convolve", "cycle", "diffinv",
   "end", "fft", "frequency", "is.ts", "na.omit", "pchisq",
   "pnorm", "quantile", "residuals", "sd", "start", "time",
   "ts", "tsp", "tsp<-", "window")

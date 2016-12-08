@@ -90,12 +90,14 @@ plot(c(io[seq.int(10)], rep(NA, 20)), type = "s", ylim = range(io),
 lines(c(rep(NA, 9), io[-seq.int(9)]))
 
 # innovative outlier based on Airlines model ARIMA(0,1,1)(0,1,1)
-p1 <- polynom::polynomial(c(1, -1))
-p2 <- polynom::polynomial(c(1, rep(0, 3), -1))
-p1b <- polynom::polynomial(c(1, -0.6))
-p2b <- polynom::polynomial(c(1, rep(0, 3), -0.6))
-io2 <- outliers.effects(mo, n, pars = list(arcoefs = -coef(p1 * p2)[-1], 
-  macoefs = coef(p1b * p2b)[-1]))
+p1 <- c(1, -1)
+p2 <- c(1, rep(0, 3), -1)
+p1xp2 <- c(1, -1, 0, 0, -1, 1)
+p1b <- c(1, -0.6)
+p2b <- c(1, rep(0, 3), -0.6)
+p2bxp2b <- c(1, -0.6, 0, 0, -0.6, 0.36)
+io2 <- outliers.effects(mo, n, pars = list(arcoefs = -p1xp2[-1], 
+  macoefs = p2bxp2b[-1]))
 plot(c(io2[seq.int(10)], rep(NA, 20)), type = "s", ylim = range(io2), 
   main = "IO based on ARIMA(0,1,1)(0,1,1)", ylab = "io2")
 lines(c(rep(NA, 9), io2[-seq.int(9)]))

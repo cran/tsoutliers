@@ -26,6 +26,24 @@ remove.outliers <- function(x, y, cval = NULL,
     return(NULL)
   }
 
+  # discard outliers identified at consecutive time points (if any)
+  # same as in locate.outliers.iloop() and locate.outliers.oloop() 
+  # but here the whole set of outliers after the outer loop is checked
+##FIXME the model could be refit as in "en-masse"
+
+  rmid <- c(
+    find.consecutive.outliers(moall, "IO"),
+    find.consecutive.outliers(moall, "AO"),
+    find.consecutive.outliers(moall, "LS"),
+    find.consecutive.outliers(moall, "TC"),
+    find.consecutive.outliers(moall, "SLS"))
+
+  if (length(rmid) > 0)
+  # do not use is.null(rmid), 'rmid' may be NULL or 'character(0)'
+  {
+     moall <- moall[-rmid,]
+  }  
+
   #tsmethod <- as.character(tsmethod.call[[1]]) 
   #if (tsmethod %in% eval(formals(stsm::stsmFit)$stsm.method))
   #  tsmethod <- "stsm"
@@ -62,6 +80,8 @@ remove.outliers <- function(x, y, cval = NULL,
 
   xreg <- outliers.effects(mo = moall, n = x$fit$n, weights = FALSE,
     delta = delta, pars = x$fit$pars, n.start = n.start, freq = frequency(y))
+
+  #
 
   iter <- 0
 
@@ -157,7 +177,35 @@ remove.outliers <- function(x, y, cval = NULL,
         break
 
       iter  <- iter + 1
+    } # end while
+
+    # refit the model without the discarded outliers and 
+    # update coefficients and t-statistics in "moall"
+
+    if (nrow(x$outliers) != nrow(moall)) # if any outliers were removed
+    {
+      if (tsmethod.call[[1]] == "auto.arima") {
+        tsmethod.call$x <- NULL # this could be done outside this loop
+        fit <- do.call("auto.arima", args = c(list(x = y), 
+          as.list(tsmethod.call[-1]), list(xreg = xreg)))
+      } else {
+        fit <- eval(as.call(c(as.list(tsmethod.call), list(xreg = xreg))))
+      }
+
+      id <- colnames(xreg)
+      if (tsmethod == "stsm")
+      {
+        xregcoefs <- fit$pars[id]
+        tstats <- xregcoefs / fit$std.errors[id]
+      } else { # method "auto.arima", "arima"        
+        xregcoefs <- coef(fit)[id]
+        tstats <- xregcoefs / sqrt(diag(fit$var.coef)[id])
+      }
+
+      moall[,"coefhat"] <- xregcoefs
+      moall[,"tstat"] <- tstats
     }
+    
   } else
   if (method == "bottom-up")
   {
@@ -209,7 +257,7 @@ stopifnot(length(id) > 1)
         xregcoefs <- fit$pars[nms]
         tstats <- xregcoefs / fit$std.errors[nms]
       } else { # method "auto.arima", "arima"
-      if (!inherits(fit, "try-error"))
+        if (!inherits(fit, "try-error"))
         {
           nms <- colnames(xregaux)
           xregcoefs <- coef(fit)[nms]
@@ -221,7 +269,7 @@ stopifnot(length(id) > 1)
       }
 
       # if adding a regressor, say "xregi", makes any of the variables in 
-      # "xregaux" not significant then "xregi" is removed
+      # "xregaux" not significant, then "xregi" is removed
 
       if (any(abs(tstats) < cval))
       {
@@ -239,18 +287,22 @@ stopifnot(length(id) > 1)
         fit0 <- fit
         recover.fit <- FALSE
       }
-    }
+    } # end for i in ref
 
-    # recover the last fit where the regressors where significant
+    # recover the last fit where the regressors were significant
     # so that the output that is returned in "fit" is in agreement with "moall"
 
     if (recover.fit)
       fit <- fit0
 
-    if (length(idrm) > 0) {
+    if (length(idrm) > 0)
+    {
       #rm(xregaux) #"xregaux" will not be in general a big object
       xreg <- xreg[,-idrm]
-      moall <- moall[-idrm,]
+      moall <- moall[id,]      
+      #update also these values      
+      moall[,"coefhat"] <- xregcoefs
+      moall[,"tstat"] <- tstats
     }
   } #else # not necessary, it would be caught by match.arg(method) above
     #stop("unkown method")
@@ -261,6 +313,11 @@ stopifnot(ncol(xreg) == 0)
     fit <- xreg <- xregcoefs <- tstats <- NULL
     #xreg <- NULL
   }
+
+  ##NOTE
+  #now coefficients and t-statistics are updated in "moall",
+  #"moall" could be used in tso0(), "xregcoefs" and "tstats" would not 
+  #be necessary as output in this function; this would avoid duplicate output
 
   list(xreg = xreg, xregcoefs = xregcoefs, xregtstats = tstats, 
     iter = iter, fit = fit, outliers = moall)

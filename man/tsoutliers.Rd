@@ -1,7 +1,6 @@
 \name{tso}
 \alias{tso}
 \alias{tso0}
-\alias{print.tsoutliers}
 
 \title{Automatic Procedure for Detection of Outliers}
 
@@ -28,10 +27,7 @@ tso0(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
 
 \arguments{
 \item{y}{a time series where outliers are to be detected.}
-\item{x}{a time series or an 
-\code{\link[stsm]{stsm}} 
-object.
-}
+\item{x}{a time series or an \code{\link[stsm]{stsm}} object.}
 \item{xreg}{an optional matrix of regressors with the same number of rows as \code{y}.}
 \item{cval}{a numeric. The critical value to determine the significance of each type of outlier.}
 \item{delta}{a numeric. Parameter of the temporary change type of outlier.}
@@ -56,8 +52,7 @@ of the function to which the arguments defined in \code{args.tsmethod} are refer
 \item{args.tsmethod}{an optional list containing arguments to be passed to 
 the function invoking the method selected in \code{tsmethod}.}
 \item{args.tsmodel}{an optional list containing the arguments to be passed to 
-\code{\link[stsm]{stsm.model}}
-. Only for \code{tsmethod = "stsm"}}.
+\code{\link[stsm]{stsm.model}}. Only for \code{tsmethod = "stsm"}}.
 \item{logfile}{a character or \code{NULL}. It is the path to the file where 
 tracking information is printed. Ignored if \code{NULL}.}
 }
@@ -116,8 +111,7 @@ twice with different values. No checks are done in \code{tso0}.
   
 If \code{tsmethod = "stsm"}, the structural time series model can be defined 
 through argument \code{args.tsmodel}, which is passed to function 
-\code{\link[stsm]{stsm.model}}
-.
+\code{\link[stsm]{stsm.model}}.
 By default, the local level model is chosen for series with one sample per unit 
 of time (e.g. annual data) and the basic structural model for seasonal data; 
 \code{ssd = TRUE} and \code{sgfc = TRUE}.

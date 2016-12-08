@@ -126,7 +126,7 @@ Ministerio de Economía y Hacienda. Document number D-95006.
 
 López-de-Lacalle, J. (2014). 
 \sQuote{Structural Time Series Models}. \R package version 1.2. 
-\url{http://CRAN.R-project.org/package=stsm}
+\url{https://CRAN.R-project.org/package=stsm}
 
 Kaiser, R., and Maravall, A. (1999). 
 \emph{Seasonal Outliers in Time Series}.

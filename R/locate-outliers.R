@@ -39,40 +39,49 @@ locate.outliers <- function(resid, pars, cval = 3.5,
   if (nrow(ind) == 1) # otherwise the row name is "row" instead of "1"
     rownames(mo) <- NULL
 
+  #changed in version 0.6-4: 
+  #the following is moved to locate.outliers.iloop(), find.consecutive.outliers()
+  #
   # remove consecutive LS
-  # if a LS is found at consecutive time points then 
-  # keep only the point with higher abs(tstat)
+  #
+  # if a LS is found at consecutive time points, then 
+  # keep only the point with the highest abs(tstat)
+  #
+  #resLS <- mo[mo[,"type"] == "LS",] 
+  #nls <- nrow(resLS)    
+  #if (nls > 1)  # && any(diff(sort(resLS[,"ind"])) == 1)
+  #{
+  #  #changed in version 0.6-4
+  #  resLS <- resLS[order(resLS[,"ind"]),]
+  #  ids <- c(0, which(diff(resLS[,"ind"]) != 1), nls)
+  #  #apparently here 'lapply' is slightly faster than 'sapply'
+  #  aux <- lapply(as.list(seq(along = ids[-1])), 
+  #    function(i, x) x[seq.int(ids[i]+1, ids[i+1])], x = seq_len(nls))
+  #  rmid <- NULL
+  #  for (i in seq_along(aux))
+  #  {
+  #    if (length(aux[[i]]) == 1)
+  #      next 
+  #    id <- which.max(abs(resLS[aux[[i]],"tstat"]))
+  #    id <- aux[[i]][-id]
+# #debug
+#stopifnot(length(id) > 0)
+  #    rmid <- c(rmid, id)
+  #  }
+  #  if (length(rmid) > 0)
+  #  {    
+  #    #changed in version 0.6-4 
+  #    #mo <- mo[-as.numeric(rownames(resLS[rmid,])),]
+  #    mo <- mo[-match(as.numeric(rownames(resLS[rmid,])), rownames(mo)),]
+  #  }
+  #}
 
-  resLS <- mo[mo[,"type"] == "LS",] 
-  nls <- nrow(resLS)    
-
-  if (nls > 1)  # && any(diff(sort(resLS[,"ind"])) == 1)
-  {
-    ids <- c(0, which(diff(resLS[,"ind"]) != 1), nls)
-    aux <- lapply(as.list(seq(along = ids[-1])), 
-      function(i, x) x[seq.int(ids[i]+1, ids[i+1])], x = seq.int(nls))
-    rmid <- NULL
-
-    for (i in seq_along(aux))
-    {
-      if (length(aux[[i]]) == 1)
-        next 
-      id <- which.max(abs(resLS[aux[[i]],"tstat"]))
-      id <- aux[[i]][-id]
-#debug
-stopifnot(length(id) > 0)
-      rmid <- c(rmid, id)
-    }
-
-    if (length(rmid) > 0)
-      mo <- mo[-as.numeric(rownames(resLS[rmid,])),]
-  }
-
-  # remove duplicates (if any)
+  # deal with multiple types of outliers at the same time point (if any)
   # if the t-statistics of more than one type outlier exceed "cval"
-  # at a given time point then keep the outlier with higher abs(tstat)
+  # at a given time point, then keep the outlier with the highest abs(tstat)
 
-  ref <- mo[,"ind"][duplicated(mo[,"ind"])]
+#changed in version 0.6-5: added 'unique'
+  ref <- unique(mo[,"ind"][duplicated(mo[,"ind"])])
   for (i in ref)
   {
     ind <- which(mo[,"ind"] == i)
@@ -83,16 +92,19 @@ stopifnot(length(id) > 0)
     # in that case, an IO was found only when the t-statistic of the IO 
     # exceeded the threshold "cval" and when the t-statistics for the other 
     # types of outliers were below the critical value;
-    # if that rule is applied again in a future version double check that 
+    # if that rule is applied again in a future version, check that 
     # this approach to remove duplicates is compatible with it
 
     #if ("IO" %in% moind[,"type"]) {
     #  tmp <- moind[which(moind[,"type"] != "IO"),]
     #} else
-      tmp <- moind[which.max(abs(moind[,"tstat"])),]
+    #  tmp <- moind[which.max(abs(moind[,"tstat"])),]
 
-    mo <- mo[-ind,]
-    mo <- rbind(mo, tmp)
+#changed in version 0.6-5 (simplified)
+    #tmp <- moind[which.max(abs(moind[,"tstat"])),]
+    #mo <- mo[-ind,]
+    #mo <- rbind(mo, tmp)
+    mo <- mo[-ind[-which.max(abs(moind[,"tstat"]))],]
   }
 
   mo
@@ -127,11 +139,35 @@ locate.outliers.iloop <- function(resid, pars, cval = 3.5,
 
     cond <- nrow(mo) > 0
 
-    # remove duplicates
+    # discard outliers identified at consecutive time points (if any)
+    #
+    #changed in version 0.6-5: 
+    # this cleaning is now done here and in locate.outliers.oloop() instead 
+    # of in locate.outliers()
+    # in addition to LS, other types of outliers are also checked 
+
+    if (cond)
+    {
+      rmid <- c(
+        find.consecutive.outliers(mo, "IO"),
+        find.consecutive.outliers(mo, "AO"),
+        find.consecutive.outliers(mo, "LS"),
+        find.consecutive.outliers(mo, "TC"),
+        find.consecutive.outliers(mo, "SLS"))
+
+      if (length(rmid) > 0)
+      # do not use is.null(rmid), 'rmid' may be NULL or 'character(0)'
+      {
+         mo <- mo[-rmid,]
+      }
+    }
+
+    # remove duplicates in 'moall' and in 'mo' (last and current iterations)
+    #
     # remove outliers at those points where an outlier was found in a previous 
     # iteration within this loop;
-    # if for example an AO was found at observation 15 it was removed from
-    # the residuals according to "outliers.regressors", then we do not expect
+    # for example, if an AO was found at observation 15, it was removed from
+    # the residuals according to "outliers.regressors", then we do not expect the 
     # detection of another AO or other type of outlier at the same time point;
     # if that happens, the type of outlier detected the first time is kept;
     # example: duplicates at this point are found in series log(hicp[["000000"]])
@@ -158,15 +194,17 @@ locate.outliers.iloop <- function(resid, pars, cval = 3.5,
     moall <- rbind(moall, mo)
 
     ##NOTE
-    # in a previous version consecutive LS were removed at 
-    # this point (if any)
-    # in some cases it was not very helpful, example: in series 
-    # hicp[["foodpr"]] with model ARIMA(0,1,1)(0,1,1))
-    # the number of outliers increased doing this here;
-    # see if it is necessary remove consectuive LS in in function 
-    # "tso0" or "tso"
-    # if (iter > 0)
-    #   moall <- rmconLS(moall)
+    # at this point, outliers at consecutive time points may arise in 'moall', 
+    # however, it may be better not to deal with here;
+    # if after checking their t-statistics it is concluded that an outlier 
+    # from a previous iteration should now be removed, it won't be easy 
+    # to restore the vector 'resid' that was modified below 
+    # (the outliers and 'pars0 from each iteration should be stored); 
+    # it seems simpler to deal with this in locate.outliers.oloop()
+    #
+    # this is not an issue with possible duplicates in 'moall' and 'mo';
+    # as done above, the outlier from the previous iteration is kept, hence, 
+    # only the current 'mo' would be modified before updating the vector 'resid'
 
     oxreg <- outliers.regressors(pars = pars, mo = mo, n = n, weights = TRUE,
       delta = delta, freq = s, n.start = n.start)
@@ -175,13 +213,13 @@ locate.outliers.iloop <- function(resid, pars, cval = 3.5,
     resid <- resid - rowSums(oxreg)
 
     iter <- iter + 1
-  }
+  } # end while
 
   # in practice this warning may be ignored or inspected further 
   # for example incrementing the value of "maxit"
 
   if (iter == maxit)
-    warning(paste("stopped when", sQuote("maxit"), "was reached"))
+    warning(paste("stopped when", sQuote("maxit.iloop"), "was reached"))
 
 ##FIXME
 # see return "iter"
@@ -193,14 +231,16 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
   cval = NULL, maxit.iloop = 4, delta = 0.7, n.start = 50, logfile = NULL)
 {
 ##FIXME 
-# add "maxit" as argument; 
+# add "maxit" (renamed as "maxit.oloop") as argument; 
 # at present I have not observed a series where "maxit" is necessary
 # for the series used so far the outer loop always finished;
-# in fact, in a previous version the loop was defined as "while(TRUE)" 
+# in a previous version the loop was defined as "while(TRUE)" 
 # instead of "while(iter < maxit)", nevertheless, for safety it is 
 # better to define a maximum number of iterations
 
-  maxit <- 4
+  maxit <- 4 # maxit.oloop
+  n <- length(y)
+  s <- frequency(y)
 
   # when "fit" is the output of "auto.arima" the argument "y" 
   # could be avoided and set "y <- fit$x"
@@ -209,10 +249,9 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
 
   # default critical value 
   # (same as in functions "tso" and "locate.outliers.oloop")
-  
+
   if (is.null(cval))
   {
-    n <- length(y)
     if (n <= 50) {
       cval <- 3
     } else 
@@ -222,12 +261,11 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
       cval <- round(3 + 0.0025 * (n - 50), 2)
   }
 
-  # tail(): take the last element just in case fit$call[[1]] is for 
-  # example "forecast::auto.arima"
+  # tail(): take the last element just in case fit$call[[1]] is 
+  # for example "forecast::auto.arima"
   tsmethod <- ifelse(inherits(fit, "stsmFit"), 
     "stsm", tail(as.character(fit$call[[1]]), 1))
-  n <- length(y)
-  s <- frequency(y)
+  #s <- frequency(y)
   moall <- data.frame(matrix(nrow = 0, ncol=4, 
     dimnames = list(NULL, c("type", "ind", "coefhat", "tstat"))))
   iter <- 0
@@ -252,10 +290,10 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
     # parameter estimates and residuals
 
     pars <- switch(tsmethod, 
-      "auto.arima" = , "arima" = coefs2poly(coef(fit), fit$arma, TRUE),
+      "auto.arima" = , "arima" = coefs2poly(fit),
       "stsm" = stsm::char2numeric(fit$model))
 
-    ##NOTE bu default residuals(fit, standardised = FALSE) 
+    ##NOTE by default residuals(fit, standardised = FALSE) 
     # only relevant for "stsm" but the argument could set here 
     # explicitly, it would be ignored if "fit" is an "Arima" object
     resid <- residuals(fit)
@@ -284,17 +322,49 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
       types = types, maxit = maxit.iloop, delta = delta, n.start = n.start, 
       logfile = logfile)
 
-    if (!is.null(logfile))
+    # discard outliers identified at consecutive time points (if any)
+    #
+    # this is done by type of outlier, e.g., two or more consecutive LS are 
+    # replaced by one LS (the one with the highest abs(t-statistic);
+    # it is still possible to get two or more consecutive outliers of different 
+    # type at consecutive time points; 
+    # alternatively consecutive outliers of any type could be replaced by a 
+    # single outlier. For the time being, this is kept in this way so that 
+    # for example, the following sequence AO1,LS2,LS3,LS4 can collapse to 
+    # AO1,LS4, i.e., the AO is kept
+    #
+    # it is not enough to do this in locate.outliers.iloop(), because 
+    # only the outliers detected at a given interation are checked there;
+    # here, the whole set of outliers returned by locate.outliers.iloop() 
+    # is checked
+
+    if (nrow(mo) > 0)
     {
-      msg <- paste("\noloop, iteration:", iter, "\n")
-      cat(msg, file = logfile, append = TRUE)
-      capture.output(mo, file = logfile, append = TRUE)
+      rmid <- c(
+        find.consecutive.outliers(mo, "IO"),
+        find.consecutive.outliers(mo, "AO"),
+        find.consecutive.outliers(mo, "LS"),
+        find.consecutive.outliers(mo, "TC"),
+        find.consecutive.outliers(mo, "SLS"))
+      #rmid <- NULL
+      #for (type in types)
+      #  rmid <- c(rmid, find.consecutive.outliers(mo, type))
+
+      if (length(rmid) > 0)
+      # do not use is.null(rmid), 'rmid' may be NULL or 'character(0)'
+      {
+        #changed in version 0.6-4
+        #mo <- mo[-as.numeric(rownames(mo[rmid,])),]
+        #mo <- mo[-match(as.numeric(rownames(mo[rmid,])), rownames(mo)),]
+        #changed in version 0.6-5
+        mo <- mo[-rmid,]
+      }
     }
 
     # remove duplicates (if any)
     # similar to locate.outliers.iloop(), if an outlier is detected at 
     # an observation where some type of outliers was already detected in 
-    # a previous run, the first detected outlier is kept
+    # a previous run, the outlier that was detected first is kept
 
     if (nrow(mo) > 0 && iter > 0)
     {
@@ -304,6 +374,26 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
       # no problems with mo[-id.dups,]
       # the two dimensions of a matrix are kept in data.frame "mo" even if 
       # "mo" contains one element after removing duplicates
+    }
+
+##FIXME
+#at this point it could be checked for consecutive outliers of a given type
+#and keep the one detected in a previous iteration
+#if (nrow(mo) > 0 && iter > 0)
+#tmp <- rbind(mo, moall)
+#rmid <- c(
+#  find.consecutive.outliers(tmp, "IO"),
+#  find.consecutive.outliers(tmp, "AO"),
+#  find.consecutive.outliers(tmp, "LS"),
+#  find.consecutive.outliers(tmp, "TC"),
+#  find.consecutive.outliers(tmp, "SLS"))
+#print(rmid)
+
+    if (!is.null(logfile))
+    {
+      msg <- paste("\noloop, iteration:", iter, "\n")
+      cat(msg, file = logfile, append = TRUE)
+      capture.output(mo, file = logfile, append = TRUE)
     }
 
     # this must be here, not before the previous "if" statement
@@ -370,12 +460,12 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
       cat(msg, file = logfile, append = TRUE)
       capture.output(fit, file = logfile, append = TRUE)
     }
-    
+
     iter <- iter + 1
-  }
+  } # end while
 
   if (iter == maxit)
-    warning(paste("stopped when", sQuote("maxit"), "was reached"))
+    warning(paste("stopped when", sQuote("maxit.oloop = 4"), "was reached"))
 
   # time points with multiple types of potential outliers are not expected
   # since they are removed at each iteration
