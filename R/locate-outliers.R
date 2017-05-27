@@ -228,17 +228,8 @@ locate.outliers.iloop <- function(resid, pars, cval = 3.5,
 }
 
 locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"), 
-  cval = NULL, maxit.iloop = 4, delta = 0.7, n.start = 50, logfile = NULL)
+  cval = NULL, maxit.iloop = 4, maxit.oloop = 4, delta = 0.7, n.start = 50, logfile = NULL)
 {
-##FIXME 
-# add "maxit" (renamed as "maxit.oloop") as argument; 
-# at present I have not observed a series where "maxit" is necessary
-# for the series used so far the outer loop always finished;
-# in a previous version the loop was defined as "while(TRUE)" 
-# instead of "while(iter < maxit)", nevertheless, for safety it is 
-# better to define a maximum number of iterations
-
-  maxit <- 4 # maxit.oloop
   n <- length(y)
   s <- frequency(y)
 
@@ -284,7 +275,7 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
   # begin outer loop
 
   #while (TRUE)
-  while (iter < maxit)
+  while (iter < maxit.oloop)
   {
     # extract the necessary information from the fitted model
     # parameter estimates and residuals
@@ -298,6 +289,12 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
     # explicitly, it would be ignored if "fit" is an "Arima" object
     resid <- residuals(fit)
 
+    # impute NAs in order to avoid propagation of NAs 
+    # in the t-statistics computed by 'outliers.tstatistics'
+    idna <- which(is.na(resid))
+    if (length(idna))
+      resid[idna] <- mean(resid, na.rm=TRUE)
+  
     if (any(abs(na.omit(resid[id0resid])) > 3.5 * sd(resid[-id0resid], na.rm = TRUE)))
     {
 ##FIXME
@@ -464,8 +461,8 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
     iter <- iter + 1
   } # end while
 
-  if (iter == maxit)
-    warning(paste("stopped when", sQuote("maxit.oloop = 4"), "was reached"))
+  if (iter == maxit.oloop)
+    warning(sprintf("stopped when \'maxit.oloop = %d\' was reached", maxit.oloop))
 
   # time points with multiple types of potential outliers are not expected
   # since they are removed at each iteration

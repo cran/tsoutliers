@@ -1,7 +1,7 @@
-\name{remove.outliers}
-\alias{remove.outliers}
+\name{discard.outliers}
+\alias{discard.outliers}
 
-\title{Stage II of the Procedure: Remove Outliers}
+\title{Stage II of the Procedure: Discard Outliers}
 
 \description{
 This functions tests for the significance of a given set of outliers 
@@ -9,7 +9,7 @@ in a time series model that is fitted including the outliers as regressor variab
 }
 
 \usage{
-remove.outliers(x, y, cval = NULL, 
+discard.outliers(x, y, cval = NULL, 
   method = c("en-masse", "bottom-up"), 
   delta = 0.7, n.start = 50, tsmethod.call = NULL, 
   fdiff = NULL, logfile = NULL)
@@ -19,7 +19,7 @@ remove.outliers(x, y, cval = NULL,
 \item{x}{a list. The output returned by \code{\link{locate.outliers.oloop}}.}
 \item{y}{a time series.}
 \item{cval}{a numeric. The critical value to determine the significance of each type of outlier.}
-\item{method}{a character. The method to remove outliers. See details.}
+\item{method}{a character. The method to discard/remove outliers. See details.}
 \item{delta}{a numeric. Parameter of the temporary change type of outlier.}
 \item{n.start}{a numeric. The number of warming observations added to the 
 input passed to the Kalman filter. Only for \code{tsmethod = "stsm"}.}
@@ -51,27 +51,28 @@ in \code{tsmethod.call$xreg} they are considered as other regressor variables
 that are included in the regression to test for the significance of outliers.
 
 Given a set of potential outliers detected by \code{\link{locate.outliers}} and 
-\code{\link{locate.outliers.oloop}}, three methods are considered to remove those outliers that 
-are not significant after fitting again the time series model:
+\code{\link{locate.outliers.oloop}}, three methods are considered in order to 
+determine which outliers are not significant after refitting the model 
+(including all the potential outliers):
 %
 \itemize{
 \item \code{"en-masse"}: The complete set of outliers is included as regressor variables and the 
 model is fitted again. Those outliers that turn out to be not significant for the critical 
-value \code{cval} are removed. The procedure is iterated until all the outliers are significant 
+value \code{cval} are discarded/removed. The procedure is iterated until all the outliers are significant 
 in the final set of outliers.
 %
 \item \code{"bottom-up"}: First the, the outlier with larger \eqn{t}-statistic is included in the 
-model. If it is significant the presence of the outlier is confirmed. Otherwise it is removed. 
+model. If it is significant the presence of the outlier is confirmed. Otherwise it is discarded. 
 Then, the next outlier with larger \eqn{t}-statistic is included along with the first outlier and 
 tested for significance. 
 If after including a new outlier, e.g. the \eqn{i}-th outlier, the outliers that have been 
-confirmed so far significant become not significant, then the \eqn{i}-th outlier is removed 
+confirmed so far significant become not significant, then the \eqn{i}-th outlier is discarded 
 regardless of the value of its \eqn{t}-statistic.
 %
 %\item \code{"linear-regression"}: The original series and the outlier regressors are 
 %differenced by means of the function \code{fdiff}. Then a linear regression of the the 
 %differenced data on the differenced regressors is performed. Those outliers that are not significant 
-%at the 5\% significant value are removed. The p-value from the linear regression is used, 
+%at the 5\% significant value are discarded. The p-value from the linear regression is used, 
 %not the critical value \code{cval}, which is omitted with this method.
 }
 
@@ -120,11 +121,11 @@ res <- locate.outliers.oloop(y, fit, types = c("AO", "LS", "TC"))
 res$outliers
 # given the model fitted above, the effect on the data of some of 
 # the outliers is not significant (method = "en-masse")
-remove.outliers(res, y, method = "en-masse", 
+discard.outliers(res, y, method = "en-masse", 
   tsmethod.call = fit$call)$outliers
 # in this case, using method = "bottom-up" the first four 
 # outliers with higher t-statistic are kept
-remove.outliers(res, y, method = "bottom-up", 
+discard.outliers(res, y, method = "bottom-up", 
   tsmethod.call = fit$call)$outliers
 }
 }

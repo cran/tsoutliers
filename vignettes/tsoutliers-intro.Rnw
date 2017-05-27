@@ -19,7 +19,7 @@
 
 \title{\textsf{R} Package \textsf{tsoutliers}}
 \author{Javier L\'opez-de-Lacalle}
-\date{July 2016}
+\date{May 2017}
 
 \begin{document}
 
@@ -38,16 +38,16 @@ Further information is available in the references given below.
 \section{Introduction}
 
 Details about the methodology and algorithms implemented in the package are 
-given in \href{http://www.jalobe.com/doc/tsoutliers.pdf}{this document}.
+given in \href{https://www.jalobe.com/doc/tsoutliers.pdf}{this document}.
 %
-%http://stats.stackexchange.com/questions/104882/detecting-outliers-in-time-series-ls-ao-tc-using-tsoutliers-package-in-r-how
-%http://stats.stackexchange.com/questions/108374/arima-intervention-transfer-function-how-to-visualize-the-effect
+%https://stats.stackexchange.com/questions/104882/detecting-outliers-in-time-series-ls-ao-tc-using-tsoutliers-package-in-r-how
+%https://stats.stackexchange.com/questions/108374/arima-intervention-transfer-function-how-to-visualize-the-effect
 %
 As a preliminary introduction and discussion see these posts: \\
-\href{http://www.jalobe.com/blog/tsoutliers/}{%
-http://www.jalobe.com/blog/tsoutliers/} and \\
-\href{http://stats.stackexchange.com/questions/104882/}{%
-http://stats.stackexchange.com/questions/104882/}.
+\href{https://www.jalobe.com/blog/tsoutliers/}{%
+https://www.jalobe.com/blog/tsoutliers/} and \\
+\href{https://stats.stackexchange.com/questions/104882/}{%
+https://stats.stackexchange.com/questions/104882/}.
 
 \paragraph{Examples}
 
@@ -69,7 +69,7 @@ checking for the presence detect possible outliers
 
 <<>>=
 resNile2 <- tso(y = Nile, types = c("AO", "LS", "TC"),
-  remove.method = "bottom-up", tsmethod = "auto.arima",
+  discard.method = "bottom-up", tsmethod = "auto.arima",
   args.tsmethod = list(allowdrift = FALSE, ic = "bic"))
 resNile2
 @

@@ -12,7 +12,8 @@ calendar.effects <- function(x, trading.day = TRUE, easter = 6,
     e <- (32 + 2 * (b %% 4) + 2 * floor(c / 4) - d - (c %% 4)) %% 7
     f <- d + e - 7 * floor((a + 11 * d + 22 * e) / 451) + 114
     d <- as.Date(paste(year, floor(f / 31), f %% 31 + 1, sep="/"))
-    if (weekdays(d) != "Sunday")
+    #if (weekdays(d) != "Sunday")
+    if (format(d, "%u") != "7")
       stop("unexpected weekday for Easter day")
     d
   }

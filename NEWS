@@ -1,4 +1,46 @@
 
+Changes in version 0.6-6 2017-05-27
+------------------------------------  
+
+  o Fix in function 'calendar.effects'. Reported by C. Espeleta.
+    By using weekday as a decimal number instead of a character, 
+    the function now works regardless of the the locale in use.
+
+  o Fix in 'locate.outliers.oloop'. https://stats.stackexchange.com/questions/281921/
+    If the series contains NAs, the NAs in the residuals that are passed to 
+    'outliers.tstatistics' are now imputed with the mean of the remaining residuals; 
+    before, those NAs were propagated throughout the t-statistics preventing the detection 
+    of outliers at some points.
+
+  o Fix in 'discard.outliers'. https://stackoverflow.com/questions/44191499/
+    If all the outliers were discarded by method "en-masse", the matrix of outliers 
+    resulted in a zero-column matrix and 'forecast::auto.arima()' returned 
+    error when trying to assign column names to it. The zero column matrix  
+    is now replaced by 'NULL'.
+
+  o The maximum number of iterations in the outer loop can now be set by the user
+    (before it was set to 4, which is currently the default). It can be set through 
+    the argument 'maxit.oloop' in functions 'tso', 'tso0' and 'locate.outliers.oloop'.
+    Suggested by J. Byers and M. Dothan.
+
+  o The function 'remove.outliers' has been renamed as 'discard.outliers'. 
+    The arguments 'remove.method' and 'remove.cval' in function 'tso' have 
+    been renamed as 'discard.method' and 'discard.cval'. 
+    The old names still work (except in 'tso0'), but a warning is given 
+    as they will be most likely be ignored in a future version. 
+
+    The name 'remove' may be misleading to users. A user expected this function to 
+    remove the outliers from the original data. The series cleaned from outliers 
+    is returned by 'tso' in the list element named 'yadj'. This function discards
+    (and removes from the set of potential outliers) those outliers that turned out 
+    to be non-significant in the updated model.
+
+  o Column names (if not provided) are now assigned to argument 'xreg'.
+    If it is a vector, it is converted to a one-column matrix.
+    This simplifies the usage of this argument.
+    Example: before, 'tso(x, xreg=cbind(series1=series1))' was the correct usage, 
+    now 'tso(x, xreg=series1)' or 'tso(x, xreg=seq_along(x))' work.
+
 Changes in version 0.6-5 2016-12-08
 ------------------------------------  
 

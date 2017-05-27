@@ -1,5 +1,5 @@
 
-remove.outliers <- function(x, y, cval = NULL, 
+discard.outliers <- function(x, y, cval = NULL, 
   method = c("en-masse", "bottom-up"), 
   delta = 0.7, n.start = 50, tsmethod.call = NULL, 
   fdiff = NULL, logfile = NULL)
@@ -126,7 +126,7 @@ remove.outliers <- function(x, y, cval = NULL,
 
       if (!is.null(logfile))
       {
-        msg <- paste("\nchoose model and remove outliers, iter:", iter, "\n")
+        msg <- paste("\nchoose model and discard outliers, iter:", iter, "\n")
         cat(msg, file = logfile, append = TRUE)
         capture.output(fit, file = logfile, append = TRUE)
       }
@@ -150,7 +150,7 @@ remove.outliers <- function(x, y, cval = NULL,
         tstats <- xregcoefs / sqrt(diag(fit$var.coef)[id])
       }
 
-      # remove outliers if they are not significant
+      # discard outliers if they are not significant
 
       ref <- which(abs(tstats) < cval)
 
@@ -174,7 +174,13 @@ remove.outliers <- function(x, y, cval = NULL,
         break
 
       if (nrow(moall) == 0)
+      {
+        # prevent 'forecast::auto.arima' from assigning column names 
+        # to a zero-columns matrix
+        if (ncol(xreg) == 0)
+          xreg <- NULL
         break
+      }
 
       iter  <- iter + 1
     } # end while
@@ -182,7 +188,7 @@ remove.outliers <- function(x, y, cval = NULL,
     # refit the model without the discarded outliers and 
     # update coefficients and t-statistics in "moall"
 
-    if (nrow(x$outliers) != nrow(moall)) # if any outliers were removed
+    if (nrow(x$outliers) != nrow(moall)) # if any outliers were discarded
     {
       if (tsmethod.call[[1]] == "auto.arima") {
         tsmethod.call$x <- NULL # this could be done outside this loop
@@ -240,7 +246,7 @@ stopifnot(length(id) > 1)
 
       if (!is.null(logfile))
       {
-        msg <- paste("\nchoose model and remove outliers, iter:", iter, "\n")
+        msg <- paste("\nchoose model and discard outliers, iter:", iter, "\n")
         cat(msg, file = logfile, append = TRUE)
         capture.output(fit, file = logfile, append = TRUE)
       }
@@ -269,7 +275,7 @@ stopifnot(length(id) > 1)
       }
 
       # if adding a regressor, say "xregi", makes any of the variables in 
-      # "xregaux" not significant, then "xregi" is removed
+      # "xregaux" not significant, then "xregi" is discarded
 
       if (any(abs(tstats) < cval))
       {

@@ -11,7 +11,8 @@ to locate outliers following the approach described in Chen and Liu (1993) .
 
 \usage{
 locate.outliers.oloop(y, fit, types = c("AO", "LS", "TC"), 
-  cval = NULL, maxit.iloop = 4, delta = 0.7, n.start = 50, logfile = NULL)
+  cval = NULL, maxit.iloop = 4, maxit.oloop = 4, 
+  delta = 0.7, n.start = 50, logfile = NULL)
 locate.outliers.iloop(resid, pars, cval = 3.5, 
   types = c("AO", "LS", "TC"), maxit = 4, delta = 0.7, n.start = 50,
   logfile = NULL)
@@ -41,6 +42,8 @@ and seasonal level shifts (\code{"SLS"}).}
 %
 \item{maxit.iloop}{a numeric. Same as argument as \code{maxit} to be passed to 
 \code{locate.outliers.iloop}.}
+%
+\item{maxit.oloop}{a numeric. The maximum number of iterations in the outer loop.}
 %
 \item{delta}{a numeric. Parameter of the temporary change type of outlier.}
 %

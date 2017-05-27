@@ -15,7 +15,7 @@ resNile1
 ### code chunk number 2: tsoutliers-intro.Rnw:70-74
 ###################################################
 resNile2 <- tso(y = Nile, types = c("AO", "LS", "TC"),
-  remove.method = "bottom-up", tsmethod = "auto.arima",
+  discard.method = "bottom-up", tsmethod = "auto.arima",
   args.tsmethod = list(allowdrift = FALSE, ic = "bic"))
 resNile2
 

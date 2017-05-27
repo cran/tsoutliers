@@ -12,15 +12,15 @@ procedure provided in this package.
 \usage{
 tso(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   types = c("AO", "LS", "TC"), 
-  maxit = 1, maxit.iloop = 4, cval.reduce = 0.14286, 
-  remove.method = c("en-masse", "bottom-up"),
-  remove.cval = NULL, 
+  maxit = 1, maxit.iloop = 4, maxit.oloop = 4, cval.reduce = 0.14286, 
+  discard.method = c("en-masse", "bottom-up"), discard.cval = NULL, 
+  remove.method, remove.cval,
   tsmethod = c("auto.arima", "arima", "stsm"), 
   args.tsmethod = NULL, args.tsmodel = NULL, logfile = NULL)
+
 tso0(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
-  types = c("AO", "LS", "TC"), maxit.iloop = 4, 
-  remove.method = c("en-masse", "bottom-up"),
-  remove.cval = NULL,   
+  types = c("AO", "LS", "TC"), maxit.iloop = 4, maxit.oloop = 4,
+  discard.method = c("en-masse", "bottom-up"), discard.cval = NULL,   
   tsmethod = c("auto.arima", "arima", "stsm"), args.tsmethod = NULL,
   args.tsmodel = NULL, logfile = NULL)
 }
@@ -40,13 +40,16 @@ and seasonal level shifts (\code{"SLS"}).}
 \item{maxit}{a numeric. The maximum number of iterations.}
 \item{maxit.iloop}{a numeric. The maximum number of iterations in the inner loop. 
 See \code{\link{locate.outliers}}.}
+\item{maxit.oloop}{a numeric. The maximum number of iterations in the outer loop.}
 \item{cval.reduce}{a numeric. Factor by which \code{cval} is reduced 
 if the procedure is run on the adjusted series, if \code{maxit > 1}.}
-\item{remove.method}{a character. The method used in the second stage of the procedure. 
-See \code{\link{remove.outliers}}.}
-\item{remove.cval}{a numeric. The critical value to determine the significance of each 
-type of outlier in the second stage of the procedure (remove outliers). By default it is 
+\item{discard.method}{a character. The method used in the second stage of the procedure. 
+See \code{\link{discard.outliers}}.}
+\item{discard.cval}{a numeric. The critical value to determine the significance of each 
+type of outlier in the second stage of the procedure (discard outliers). By default it is 
 set equal to \code{cval}. See details.}
+\item{remove.method}{deprecated, argument \code{discard.method} should be used.}
+\item{remove.cval}{deprecated, argument \code{discard.cval} should be used.}
 \item{tsmethod}{a character. The framework for time series modelling. It basically is the name 
 of the function to which the arguments defined in \code{args.tsmethod} are referred to.}
 \item{args.tsmethod}{an optional list containing arguments to be passed to 
@@ -65,7 +68,7 @@ and \code{"TC"} temporary changes are selected;
 can also be selected.
 
 \code{tso0} is mostly a wrapper function around the functions 
-\code{\link{locate.outliers}} and \code{\link{remove.outliers}}.
+\code{\link{locate.outliers}} and \code{\link{discard.outliers}}.
 
 \code{tso} iterates around \code{tso0} first for the original series 
 and then for the adjusted series. The process stops if no additional outliers 
@@ -123,21 +126,21 @@ may be reduced by the factor \code{cval.reduce}, equal to \eqn{0.14286} by defau
 The new critical value is defined as \eqn{cval * (1 - cval.reduce)}.
 
 By default, the same critical value is used in the first stage of the procedure 
-(location of outliers) and in the second stage (remove outliers). 
+(location of outliers) and in the second stage (discard outliers). 
 Under the framework of structural time series models I noticed that 
 the default critical value based on the sample size is too high, since all the 
 potential outliers located in the first stage were discarded in the second stage 
 (even in simulated series with known location of outliers). 
-In order to investigate this issue, the argument \code{remove.cval} has been added. 
+In order to investigate this issue, the argument \code{discard.cval} has been added. 
 In this way a different critical value can be used in the second stage. 
-Alternatively, the argument \code{remove.cval} could be omitted and simply choose 
+Alternatively, the argument \code{discard.cval} could be omitted and simply choose 
 a lower critical value, \code{cval}, to be used in both stages.
-However, using the argument \code{remove.cval} is more convenient since it avoids 
+However, using the argument \code{discard.cval} is more convenient since it avoids 
 locating too many outliers in the first stage.
 %If a lower critical value is chosen for the whole procedure, \code{cval}, 
 %then potential set of outliers located in the first stage is much larger, although 
 %most of them are discarded in the second stage. 
-\code{remove.cval} is not affected by \code{cval.reduce}.
+\code{discard.cval} is not affected by \code{cval.reduce}.
 }
 
 \value{
@@ -145,7 +148,7 @@ A list of class \code{tsoutliers}.
 }
 
 \seealso{
-\code{\link{locate.outliers}}, \code{\link{remove.outliers}}, 
+\code{\link{locate.outliers}}, \code{\link{discard.outliers}}, 
 \code{\link{plot.tsoutliers}}, \code{\link{print.tsoutliers}}.
 }
 

@@ -24,6 +24,10 @@ outliers.tstatistics.default <- function(pars, resid, types = c("AO", "LS", "TC"
     "\n       see", sQuote("?coefs2poly"), "in package", sQuote("tsoutliers"),
     "or", sQuote("?char2numeric"), "in package", sQuote("stsm"))
 
+  if (anyNA(resid))
+    warning("the series \'resid\' contain NAs;\n", 
+    "Potential outliers before the last NA may be overlooked")
+
   # if "pars" is a list, deduce the type of time series model 
   # looking at the names of the elements in "pars"
 
@@ -76,7 +80,7 @@ outliers.tstatistics.ArimaPars <- function(pars, resid, types = c("AO", "LS", "T
     if (any(c("LS", "TC", "SLS") %in% types))
       rev.ao.xy <- rev(ao.xy)
   }
-  
+
   if ("IO" %in% types)
   {
     #IOres <- cbind(coefhat = resid, tstat = resid / sigma)

@@ -8,14 +8,28 @@
 
 tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   types = c("AO", "LS", "TC"), # c("IO", "AO", "LS", "TC", "SLS")
-  maxit = 1, maxit.iloop = 4, cval.reduce = 0.14286, 
-  remove.method = c("en-masse", "bottom-up"),
-  remove.cval = NULL, 
+  maxit = 1, maxit.iloop = 4, maxit.oloop = 4, cval.reduce = 0.14286, 
+  discard.method = c("en-masse", "bottom-up"), discard.cval = NULL, 
+  remove.method, remove.cval, 
   tsmethod = c("auto.arima", "arima", "stsm"), 
   args.tsmethod = NULL, args.tsmodel = NULL, logfile = NULL)
 {
+  if (!missing(remove.method))
+  {
+    discard.method <- remove.method
+    warning("argument \'remove.method\' is deprecated and will be ignored in future versions, ",
+    "\'discard.method\' should be used instead")
+  }
+
+  if (!missing(remove.cval))
+  {
+    discard.cval <- remove.cval
+    warning("argument \'remove.cval\' is deprecated and will be ignored in future versions, ",
+    "\'discard.cval\' should be used instead")
+  }
+
   tsmethod <- match.arg(tsmethod)
-  remove.method <- match.arg(remove.method)
+  discard.method <- match.arg(discard.method)
   attr.y <- attributes(y)
   n <- length(y)
   yname <- deparse(substitute(y))
@@ -34,12 +48,18 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
       # in "xreg" and "args.tsmethod$xreg" but with different values
       if (!identical(xreg, args.tsmethod$xreg))
       {
-        warning(paste("non-null", sQuote("args.tsmethod$xreg"), "was ignored; argument ", 
-        sQuote("xreg"), "was used instead"))
+        warning(paste("non-null \'args.tsmethod$xreg\' was ignored;", 
+        "argument \'xreg\' was used instead"))
       } # else # "xreg" was defined twice with the same values (no warning)
       args.tsmethod$xreg <- NULL # this removes element "xreg" from the list
     }
   }
+
+  if (is.null(dim(xreg))) {
+    xreg <- cbind(xreg=xreg)
+  } else
+  if (is.null(colnames(xreg)))
+    colnames(xreg) <- paste0("xreg", seq_len(ncol(xreg)))
 
   if (tsmethod == "stsm")
   {
@@ -75,7 +95,7 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   }
 
   # default critical value
-  # the same is done in functions "locate.outliers.oloop" and "remove.outliers"
+  # the same is done in functions "locate.outliers.oloop" and "discard.outliers"
   # "cval" is passed as a non-null value from tso() to those functions
   # but keep there this block so that default value is used when those functions 
   # are called outside tso()
@@ -93,8 +113,8 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   }
 
   cval0 <- cval
-  if (is.null(remove.cval))
-    remove.cval <- cval
+  if (is.null(discard.cval))
+    discard.cval <- cval
 
   # "res0" is used below to generate the output, 
   # "res" is overwritten until no more outliers are found 
@@ -102,8 +122,8 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
 
   res0 <- res <- tso0(x = y, xreg = xreg, cval = cval, 
     delta = delta, n.start = n.start,
-    types = types, maxit.iloop = maxit.iloop, 
-    remove.method = remove.method, remove.cval = remove.cval,
+    types = types, maxit.iloop = maxit.iloop, maxit.oloop = maxit.oloop,
+    discard.method = discard.method, discard.cval = discard.cval,
     tsmethod = tsmethod, args.tsmethod = args.tsmethod, 
     logfile = logfile)
 
@@ -134,7 +154,7 @@ if (tsmethod == "stsm")
     res <- tso0(x = res$yadj, xreg = xreg, cval = cval, 
       delta = delta, n.start = n.start,
       types = types, maxit.iloop = maxit.iloop, 
-      remove.method = remove.method, remove.cval = remove.cval, 
+      discard.method = discard.method, discard.cval = discard.cval, 
       tsmethod = tsmethod, args.tsmethod = args.tsmethod, 
       logfile = logfile)
 
@@ -235,9 +255,8 @@ if (tsmethod == "stsm")
 }
 
 tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
-  types = c("AO", "LS", "TC"), maxit.iloop = 4, 
-  remove.method = c("en-masse", "bottom-up"),
-  remove.cval = NULL, 
+  types = c("AO", "LS", "TC"), maxit.iloop = 4, maxit.oloop = 4, 
+  discard.method = c("en-masse", "bottom-up"), discard.cval = NULL, 
   tsmethod = c("auto.arima", "arima", "stsm"), args.tsmethod = NULL,
   args.tsmodel = NULL, logfile = NULL)
 {
@@ -246,13 +265,13 @@ tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
 
   y <- if(is.ts(x)) { x } else x@y
 
-  #remove.method <- match.arg(remove.method)
+  #discard.method <- match.arg(discard.method)
   #tsmethod <- match.arg(tsmethod)
-  #remove.method <- match.arg(remove.method)
+  #discard.method <- match.arg(discard.method)
   fitmethod <- gsub("stsm", "stsmFit", tsmethod)
 
-  if (is.null(remove.cval))
-    remove.cval <- cval
+  if (is.null(discard.cval))
+    discard.cval <- cval
 
   # fit time series model
 
@@ -270,7 +289,8 @@ tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
   # given a fitted time series model
 
   stage1 <- locate.outliers.oloop(y = y, fit = fit, types = types, cval = cval, 
-    maxit.iloop = maxit.iloop, delta = delta, n.start = n.start, logfile = logfile)
+    maxit.iloop = maxit.iloop, maxit.oloop = maxit.oloop, 
+    delta = delta, n.start = n.start, logfile = logfile)
 
   # choose and fit the model including the outlier regressors detected so far
   # (the weights of the outliers is fine tuned, to see it 
@@ -279,8 +299,8 @@ tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
 
   if (nrow(stage1$outliers) > 0)
   {
-    stage2 <- remove.outliers(x = stage1, y = y, cval = remove.cval, 
-      method = remove.method, delta = delta, n.start = n.start, 
+    stage2 <- discard.outliers(x = stage1, y = y, cval = discard.cval, 
+      method = discard.method, delta = delta, n.start = n.start, 
       tsmethod.call = fit$call, fdiff = NULL, logfile = logfile)
 
 #moall <- stage2$outliers
@@ -295,7 +315,7 @@ stopifnot(ncol(stage2$xreg) == length(stage2$xregcoefs))
   {
     # stage2$fit$xreg is not returned by arima()
     moall <- stage2$outliers
-    ##NOTE changed 2016Nov12 after changes in remove.outliers(), "moall" is updated there
+    ##NOTE changed 2016Nov12 after changes in discard.outliers(), "moall" is updated there
     #moall[,"coefhat"] <- stage2$xregcoefs
     #moall[,"tstat"] <- stage2$xregtstats
 

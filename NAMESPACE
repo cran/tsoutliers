@@ -2,6 +2,7 @@
 export(
 calendar.effects,
 coefs2poly,
+discard.outliers,
 find.consecutive.outliers,
 JarqueBera.test,
 locate.outliers,
