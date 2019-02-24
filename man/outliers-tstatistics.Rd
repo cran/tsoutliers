@@ -9,17 +9,12 @@
 This function computes the \eqn{t}-statistics to assess the significance 
 of different types of outliers at every possible time point. 
 The statistics can be based either on an ARIMA model, 
-\code{\link[stats]{arima}}, \code{\link[forecast]{auto.arima}}, or a 
-structural time series model, \code{\link[stsm]{stsmFit}}.
+\code{\link[stats]{arima}} or \code{\link[forecast]{auto.arima}}.
 }
 
 \usage{
 outliers.tstatistics(pars, resid, types = c("AO", "LS", "TC"), 
-  sigma = NULL, delta = 0.7, n.start = 50)
-%tstats.arima(resid, pars, types = c("AO", "LS", "TC"), 
-%  sigma = NULL, delta = 0.7)
-%tstats.stsm(resid, pars, types = c("AO", "LS", "TC"), 
-%  sigma = NULL, delta = 0.7, n.start = 50)
+  sigma = NULL, delta = 0.7)
 }
 
 \arguments{
@@ -29,8 +24,8 @@ See details section in \code{\link{locate.outliers}}.}
 \item{types}{a character vector indicating the types of outliers to be considered.}
 \item{sigma}{a numeric or \code{NULL}. Standard deviation of residuals.}
 \item{delta}{a numeric. Parameter of the temporary change type of outlier.}
-\item{n.start}{a numeric. The number of warming observations added to the 
-input passed to the Kalman filter. Only for \code{pars} of class \code{"stsmSS"}.}
+%\item{n.start}{a numeric. The number of warming observations added to the 
+%input passed to the Kalman filter. Only for \code{pars} of class \code{"stsmSS"}.}
 %\item{tsmethod}{an optional character indicating whether argument \code{pars} 
 %contains the parameters from an ARIMA model (\code{tsmethod = "arima"} or from a 
 %structural time series model (\code{tsmethod = "stsm"}). If it is kept as

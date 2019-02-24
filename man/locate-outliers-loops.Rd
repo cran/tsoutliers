@@ -12,18 +12,16 @@ to locate outliers following the approach described in Chen and Liu (1993) .
 \usage{
 locate.outliers.oloop(y, fit, types = c("AO", "LS", "TC"), 
   cval = NULL, maxit.iloop = 4, maxit.oloop = 4, 
-  delta = 0.7, n.start = 50, logfile = NULL)
+  delta = 0.7, logfile = NULL)
 locate.outliers.iloop(resid, pars, cval = 3.5, 
-  types = c("AO", "LS", "TC"), maxit = 4, delta = 0.7, n.start = 50,
-  logfile = NULL)
+  types = c("AO", "LS", "TC"), maxit = 4, delta = 0.7, logfile = NULL)
 }
 
 \arguments{
 \item{y}{a time series.}
 %
-\item{fit}{an \code{Arima} or \code{stsm} object. The output from \code{\link[stats]{arima}}, 
-\code{\link[forecast]{auto.arima}} or the functions to fit a structural time series model 
-available in package \pkg{stsm}}.
+\item{fit}{an \code{Arima} object. The output from \code{\link[stats]{arima}} or 
+\code{\link[forecast]{auto.arima}}}.
 %
 \item{resid}{a time series. Residuals from a time series model fitted to the data.}
 %
@@ -46,10 +44,6 @@ and seasonal level shifts (\code{"SLS"}).}
 \item{maxit.oloop}{a numeric. The maximum number of iterations in the outer loop.}
 %
 \item{delta}{a numeric. Parameter of the temporary change type of outlier.}
-%
-\item{n.start}{a numeric. The number of warming observations added to the 
-input passed to the Kalman filter. Used only if \code{pars} is related to a 
-structural time series model.}
 %
 \item{logfile}{a character or \code{NULL}. It is the path to the file where 
 tracking information is printed. Ignored if \code{NULL}.}
@@ -126,10 +120,6 @@ Gómez, V. and Taguas, D. (1995).
 Una Aplicación al IPC de Bienes Industriales no Energéticos}.
 Ministerio de Economía y Hacienda. Document number D-95006.
 \url{http://www.sepg.pap.minhap.gob.es/sitios/sepg/es-ES/Presupuestos/Documentacion/Documents/DOCUMENTOS\%20DE\%20TRABAJO/D95006.pdf}
-
-López-de-Lacalle, J. (2014). 
-\sQuote{Structural Time Series Models}. \R package version 1.2. 
-\url{https://CRAN.R-project.org/package=stsm}
 
 Kaiser, R., and Maravall, A. (1999). 
 \emph{Seasonal Outliers in Time Series}.

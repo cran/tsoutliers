@@ -1,6 +1,30 @@
 
+Changes in version 0.6-8 2019-02-24
+------------------------------------
+
+  o Fixed the Date field in the DESCRIPTION file (2018 -> 2019).
+
+Changes in version 0.6-7 2019-02-23
+------------------------------------
+
+  o The utilities for structural time series models have been disabled.
+    The package 'stsm' and the function 'KFKSDS::KF' are no longer imported.
+    Those utilities were an experimental version that extended the 
+    procedure for detection of outliers in ARIMA models to other models 
+    in state space form. The vignette still documents this approach. 
+    If interested in the code, check previous versions or contact the maintainer.
+    
+  o Fix in 'outliers.effects': computations were not correct for the case of 
+    innovational outliers. 'c(1, mas)' is now used instead of 'c(1, -mas)' as 
+    the MA coefficients. Reported by D. Kehl.
+    
+  o Tentative approach enabled by argument 'check.rank' in 'discard.outliers' 
+    in order to deal with perfect collinearity among the regressor variables.
+    
+  o Further fixes in function 'calendar.effects' to make it independent of the locale. 
+
 Changes in version 0.6-6 2017-05-27
-------------------------------------  
+------------------------------------
 
   o Fix in function 'calendar.effects'. Reported by C. Espeleta.
     By using weekday as a decimal number instead of a character, 
@@ -42,7 +66,7 @@ Changes in version 0.6-6 2017-05-27
     now 'tso(x, xreg=series1)' or 'tso(x, xreg=seq_along(x))' work.
 
 Changes in version 0.6-5 2016-12-08
-------------------------------------  
+------------------------------------
 
   o Created "find.consecutive.outliers" to find outliers that were detected 
     at consecutive time points by "locate.outliers.oloop" and "locate.outliers.iloop".
@@ -79,7 +103,7 @@ Changes in version 0.6-5 2016-12-08
     type points (if any) are discarded keeping the outlier from the older iteration.
 
 Changes in version 0.6-4 2016-07-28
-------------------------------------  
+------------------------------------
 
   o Development version distributed to some users (not submitted to CRAN). 
 
@@ -87,14 +111,14 @@ Changes in version 0.6-4 2016-07-28
     Thanks to Paymon Ashourian for reporting this issue.
 
 Changes in version 0.6-3 2016-07-07
-------------------------------------  
+------------------------------------
 
   o Imported some functions in the NAMESPACE suggested by R CMD check.
   
   o Fixed the link to some URLs given in the vignette.
 
 Changes in version 0.6-2 2015-05-18
------------------------------------- 
+------------------------------------
 
   o Development version not submitted to CRAN.
 
@@ -104,7 +128,7 @@ Changes in version 0.6-2 2015-05-18
     Email Diego Selle, November 24, 2015.
 
 Changes in version 0.6-1 2015-04-15
-------------------------------------  
+------------------------------------
 
   o Development version not submitted to CRAN.
 
@@ -112,13 +136,13 @@ Changes in version 0.6-1 2015-04-15
     with dply::filter. Thanks to Nathan Kugland, Derek Holmes and Eric Goldsmith for reporting this.
 
 Changes in version 0.6 2015-01-27
------------------------------------  
+-----------------------------------
 
   o The functionalities of package "stsm" have been restored now 
     that the package "stsm" has been updated on CRAN.
 
 Changes in version 0.5 2015-01-25
------------------------------------  
+-----------------------------------
 
   o This is submitted to CRAN as a transitory version where some 
     functions related to package "stsm" are disabled.

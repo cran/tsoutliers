@@ -1,16 +1,16 @@
 
 outliers.regressors <- function(pars, mo, n, weights = TRUE,
-  delta = 0.7, freq = 12, n.start = 50)
+  delta = 0.7, freq = 12) #n.start = 50)
   UseMethod("outliers.regressors")
 
 outliers.regressors.default <- function(pars, mo, n, weights = TRUE,
-  delta = 0.7, freq = 12, n.start = 50)
+  delta = 0.7, freq = 12) #n.start = 50)
 {
   msg <- paste("argument", sQuote("pars"), "should be of class", 
-    sQuote("ArimaPars"), "or", sQuote("stsmSS"), 
-    "\n       see", sQuote("?coefs2poly"), "in package", sQuote("tsoutliers"),
-    "or", sQuote("?char2numeric"), "in package", sQuote("stsm"))
-
+    sQuote("ArimaPars"), #"or", sQuote("stsmSS"), 
+    "\n       see", sQuote("?coefs2poly"), "in package", sQuote("tsoutliers"))#,
+    #"or", sQuote("?char2numeric"), "in package", sQuote("stsm"))
+  
   #if (!inherits(pars, "ArimaPars") && !inherits(pars, "stsmSS"))
   #  stop(msg)
 
@@ -22,21 +22,23 @@ outliers.regressors.default <- function(pars, mo, n, weights = TRUE,
     tmp <- names(pars)
     if (all(c("arcoefs", "macoefs") %in% tmp)) {
       pars <- structure(pars, class = "ArimaPars")
-    } else 
-    if (all(c("Z", "T", "H") %in% tmp)) {
-      pars <- structure(pars, class = "stsmSS")
     } else
       stop(msg)
+    # in order to enable this part, uncomment and paste it above, before 'stop(msg)'
+    #if (all(c("Z", "T", "H") %in% tmp)) {
+    #  pars <- structure(pars, class = "stsmSS")
+    #} else
+    #  stop(msg)
 
     outliers.regressors(pars = pars, mo = mo, n = n, weights = weights,
-      delta = delta, freq = freq, n.start = n.start)
+      delta = delta, freq = freq) #n.start = n.start
 
   } else
     stop(msg)
 }
 
 outliers.regressors.ArimaPars <- function(pars, mo, n, weights = TRUE,
-  delta = 0.7, freq = 12, n.start = 50)
+  delta = 0.7, freq = 12) #n.start = 50
 {
   # "n.start" is not used here with "ArimaPars"
   

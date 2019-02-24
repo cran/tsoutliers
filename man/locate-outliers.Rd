@@ -9,8 +9,7 @@ at every time point and selects those that are significant given a critical valu
 }
 
 \usage{
-locate.outliers(resid, pars, cval = 3.5, types = c("AO", "LS", "TC"), 
-  delta = 0.7, n.start = 50)
+locate.outliers(resid, pars, cval = 3.5, types = c("AO", "LS", "TC"), delta = 0.7)
 }
 
 \arguments{
@@ -25,9 +24,6 @@ type of outlier.}
 \item{types}{a character vector indicating the types of outliers to be considered.}
 %
 \item{delta}{a numeric. Parameter of the temporary change type of outlier.}
-%
-\item{n.start}{a numeric. The number of warming observations added to the 
-input passed to the Kalman filter. Only for \code{"stsm"}.}
 }
 
 \details{
@@ -93,11 +89,6 @@ In the framework of ARIMA models, the coefficients of the ARIMA must be defined 
 as the product of the autoregressive non-seasonal and seasonal polynomials (if any) and the 
 differencing filter (if any). The function \code{\link{coefs2poly}} can be used to define 
 the argument \code{pars}. 
-For structural time series models that are fitted by means of the package \pkg{stsm}, 
-the function 
-\code{\link[stsm]{char2numeric}} 
-available in the 
-\pkg{stsm} package is the most convenient way to define the argument \code{pars}.
 }
 
 \value{
@@ -142,10 +133,6 @@ Gómez, V. and Taguas, D. (1995).
 Una Aplicación al IPC de Bienes Industriales no Energéticos}.
 Ministerio de Economía y Hacienda. Document number D-95006.
 \url{http://www.sepg.pap.minhap.gob.es/sitios/sepg/es-ES/Presupuestos/Documentacion/Documents/DOCUMENTOS\%20DE\%20TRABAJO/D95006.pdf}
-
-López-de-Lacalle, J. (2014). 
-\sQuote{Structural Time Series Models}. \R package version 1.2. 
-\url{https://CRAN.R-project.org/package=stsm}
 
 Kaiser, R., and Maravall, A. (1999). 
 \emph{Seasonal Outliers in Time Series}.

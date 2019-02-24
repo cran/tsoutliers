@@ -28,10 +28,14 @@ calendar.effects <- function(x, trading.day = TRUE, easter = 6,
     d2 <- d1 - backdays
     days <- seq(from = d2, to = d1, by = "day")
     #days <- seq(from = d1, to = d2, by = -1)
+    days <- format(days, "%m")
 
+    #list(easter = d1, 
+    #  prop = c(sum(months(days) == "March") / (backdays + 1) - pmarch, 
+    #  sum(months(days) == "April") / (backdays + 1) - papril))
     list(easter = d1, 
-      prop = c(sum(months(days) == "March") / (backdays + 1) - pmarch, 
-      sum(months(days) == "April") / (backdays + 1) - papril))
+      prop = c(sum(days == "03") / (backdays + 1) - pmarch, 
+      sum(days == "04") / (backdays + 1) - papril))
   }
 
   #stopifnot(is.ts(x))
@@ -105,12 +109,15 @@ calendar.effects <- function(x, trading.day = TRUE, easter = 6,
       dN <- as.Date(paste(c(ysN, 1), collapse = "-"), 
         format = "%Y-%m-%d") - 1
 
-      days <- weekdays(seq(from = d0, to = dN, by = "day"), abbreviate = TRUE)
+      #days <- weekdays(seq(from = d0, to = dN, by = "day"), abbreviate = TRUE)
+      days <- format(seq(from = d0, to = dN, by = "day"), "%u")
 
       if (trading.day)
       {
-        wd <- sum(days %in% c("Mon", "Tue", "Wed", "Thu", "Fri"))
-        nwd <- sum(days %in% c("Sat", "Sun"))
+        #wd <- sum(days %in% c("Mon", "Tue", "Wed", "Thu", "Fri"))
+        #nwd <- sum(days %in% c("Sat", "Sun"))
+        wd <- sum(days %in% c("1", "2", "3", "4", "5"))
+        nwd <- sum(days %in% c("6", "7"))
 
         if (!is.null(holidays))
         {

@@ -11,7 +11,7 @@ As of version 0.6-6, \code{remove.outliers} has been renamed as \code{discard.ou
 \usage{
 remove.outliers(x, y, cval = NULL, 
   method = c("en-masse", "bottom-up"), 
-  delta = 0.7, n.start = 50, tsmethod.call = NULL, 
+  delta = 0.7, tsmethod.call = NULL, 
   fdiff = NULL, logfile = NULL)
 }
 
@@ -21,8 +21,6 @@ remove.outliers(x, y, cval = NULL,
 \item{cval}{a numeric. The critical value to determine the significance of each type of outlier.}
 \item{method}{a character. The method to discard/remove outliers. See details.}
 \item{delta}{a numeric. Parameter of the temporary change type of outlier.}
-\item{n.start}{a numeric. The number of warming observations added to the 
-input passed to the Kalman filter. Only for \code{tsmethod = "stsm"}.}
 \item{tsmethod.call}{an optional \code{call} object. The call to the function used to fit the time 
 series model.}
 \item{fdiff}{currently ignored.}

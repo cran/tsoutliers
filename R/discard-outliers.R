@@ -1,15 +1,16 @@
 
 discard.outliers <- function(x, y, cval = NULL, 
   method = c("en-masse", "bottom-up"), 
-  delta = 0.7, n.start = 50, tsmethod.call = NULL, 
-  fdiff = NULL, logfile = NULL)
+  delta = 0.7, #n.start = 50, 
+  tsmethod.call = NULL, fdiff = NULL, logfile = NULL,
+  check.rank = FALSE)
 {
   if (is.null(tsmethod.call))
     stop(paste(sQuote("tsmethod.call"), "cannot be NULL"))
 
   # arguments "tsmethod" and "args.tsmethod" (and "args.tsmodel" for "stsm")
   # could be added in order to provide an alternative to argument "tsmethod.call"
-  # as way to pass the necessary information;
+  # as a way to pass the necessary information;
   # the same that is done in function "tso" could be done here,
   # it would involve dealing again with default values for the fitting method 
   # and for the structural model if "stsm" is selected and the code of this function 
@@ -79,7 +80,35 @@ discard.outliers <- function(x, y, cval = NULL,
   #"pars" is used only if IO is considered
 
   xreg <- outliers.effects(mo = moall, n = x$fit$n, weights = FALSE,
-    delta = delta, pars = x$fit$pars, n.start = n.start, freq = frequency(y))
+    delta = delta, pars = x$fit$pars, #n.start = n.start, 
+    freq = frequency(y))
+
+##2017-19-02 experimental, deal with perfect collinearity
+#other possible approaches
+#https://stackoverflow.com/questions/12304963/
+#https://stats.stackexchange.com/questions/16327/
+#An intercept is included, however, it could be the case that a drift is 
+#not chosen by auto.arima(). Nevertheless, in a particular example it was
+#observed that lm(y~0+xreg) returned no NA coefficients, but 
+#auto.arima(allowdrift=FALSE) reported "xreg is rank deficient";
+#therefore, as a general approach, it may be better to include an intercept
+#in the ARIMA model
+#
+#the following did not work (although perfect collinearity is not present, no vector of ones)
+#fit <- do.call("auto.arima", args = c(list(x = y,include.mean=FALSE,allowdrift=FALSE,allowmean=FALSE), 
+#  as.list(tsmethod.call[-1]), list(xreg = xregall)))
+if (check.rank)
+{
+  id <- which(is.na(lm.fit(cbind(1,xreg),y)$coef))
+  if (length(id) > 0)
+  {
+    id <- id - 1 # column of 1s was added
+    xreg <- xreg[,-id]
+    moall <- moall[-id,]
+    #dim(xreg) may turn NULL, this would require adjustments as done below,
+    #but this block is expected to be entered when there are several outliers
+  }
+}
 
   #
 
@@ -123,7 +152,7 @@ discard.outliers <- function(x, y, cval = NULL,
       } else {
         fit <- eval(as.call(c(as.list(tsmethod.call), list(xreg = xregall))))
       }
-
+  
       if (!is.null(logfile))
       {
         msg <- paste("\nchoose model and discard outliers, iter:", iter, "\n")

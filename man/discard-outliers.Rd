@@ -11,8 +11,8 @@ in a time series model that is fitted including the outliers as regressor variab
 \usage{
 discard.outliers(x, y, cval = NULL, 
   method = c("en-masse", "bottom-up"), 
-  delta = 0.7, n.start = 50, tsmethod.call = NULL, 
-  fdiff = NULL, logfile = NULL)
+  delta = 0.7, tsmethod.call = NULL, 
+  fdiff = NULL, logfile = NULL, check.rank = FALSE)
 }
 
 \arguments{
@@ -21,8 +21,8 @@ discard.outliers(x, y, cval = NULL,
 \item{cval}{a numeric. The critical value to determine the significance of each type of outlier.}
 \item{method}{a character. The method to discard/remove outliers. See details.}
 \item{delta}{a numeric. Parameter of the temporary change type of outlier.}
-\item{n.start}{a numeric. The number of warming observations added to the 
-input passed to the Kalman filter. Only for \code{tsmethod = "stsm"}.}
+%\item{n.start}{a numeric. The number of warming observations added to the 
+%input passed to the Kalman filter. Only for \code{tsmethod = "stsm"}.}
 \item{tsmethod.call}{an optional \code{call} object. The call to the function used to fit the time 
 series model.}
 %\item{tsmethod}{a character. The name of the function used to fit the time series model.
@@ -34,6 +34,8 @@ series model.}
 \item{fdiff}{currently ignored.}
 \item{logfile}{a character or \code{NULL}. It is the path to the file where 
 tracking information is printed. Ignored if \code{NULL}.}
+\item{check.rank}{logical. If \code{TRUE}, variables generating perfect multicollinearity 
+are removed (tentative implementation).}
 }
 
 \details{

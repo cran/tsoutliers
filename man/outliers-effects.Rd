@@ -10,7 +10,7 @@ of outliers considered in the package.
 
 \usage{
 outliers.effects(mo, n, weights = FALSE, delta = 0.7, 
-  pars = NULL, n.start = 50, freq = 12)
+  pars = NULL, freq = 12)
 }
 
 \arguments{
@@ -26,10 +26,6 @@ unit weights are considered.}
 %
 \item{pars}{a list containing the parameters of the time series model fitted to the data. 
 Only for innovational outlier. See the details section in \code{\link{locate.outliers}}.}
-%
-\item{n.start}{a numeric. The number of warming observations added to the 
-input passed to the Kalman filter. Only for innovational outlier and \code{pars} of 
-class \code{"stsmSS"}.}
 %
 \item{freq}{a numeric. The periodicity of the data. Only for seasonal level shift.}
 }
@@ -118,6 +114,18 @@ tc <- outliers.effects(mo, n)
 plot(c(tc[seq.int(10)], rep(NA, 20)), type = "s", 
   main = "TC: temporary change", ylab = "tc")
 lines(c(rep(NA, 9), tc[-seq.int(9)]))
+
+# the temporary change with parameter 0.7 is equivalent to 
+# an IO for an AR(1) model with coefficient 0.7
+mo <- outliers("IO", 10)
+io3 <- outliers.effects(mo, n = n, pars = list(arcoefs = c(0.7), macoefs = c(0)))
+all.equal(io3, tc, check.attributes=FALSE)
+
+# the temporary change with parameter 0.7 is equivalent to 
+# an IO for an AR(1) model with coefficient 0.7
+mo <- outliers("IO", 10)
+io4 <- outliers.effects(mo, n = n, pars = list(arcoefs = 1, macoefs = 0))
+all.equal(io4, ls, check.attributes=FALSE)
 
 # seasonal level shift (quarterly data)
 mo <- outliers("SLS", 10)

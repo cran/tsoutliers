@@ -6,13 +6,14 @@
 # in this way, the same arguments are passed to "stats::arima" and "stsmFit" 
 # and the code is simplified here avoiding "if" statements depending on "tsmethod"
 
-tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
+tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, #n.start = 50,
   types = c("AO", "LS", "TC"), # c("IO", "AO", "LS", "TC", "SLS")
   maxit = 1, maxit.iloop = 4, maxit.oloop = 4, cval.reduce = 0.14286, 
   discard.method = c("en-masse", "bottom-up"), discard.cval = NULL, 
   remove.method, remove.cval, 
-  tsmethod = c("auto.arima", "arima", "stsm"), 
-  args.tsmethod = NULL, args.tsmodel = NULL, logfile = NULL)
+  tsmethod = c("auto.arima", "arima"),#, "stsm"), 
+  args.tsmethod = NULL, #args.tsmodel = NULL, 
+  logfile = NULL, check.rank = FALSE)
 {
   if (!missing(remove.method))
   {
@@ -61,22 +62,22 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   if (is.null(colnames(xreg)))
     colnames(xreg) <- paste0("xreg", seq_len(ncol(xreg)))
 
-  if (tsmethod == "stsm")
-  {
-    if (is.null(args.tsmodel$model))
-      args.tsmodel$model <- ifelse(frequency(y) == 1, "local-level", "BSM")   
-
-##FIXME these defaults only if stsm.method = "maxlik.fd.scoring"
-
-    if (is.null(args.tsmodel$ssd))
-      args.tsmodel$ssd <- TRUE
-    if (is.null(args.tsmodel$sgfc))
-      args.tsmodel$sgfc <- TRUE
-    # let "stsm::stsmFit" handle "xreg", not here
-    y <- do.call("stsm.model", args = c(list(y = y), args.tsmodel))
-    #ylist <- list(m = m)
-  } #else
-    #ylist <- list(x = y) # m <- y
+#   if (tsmethod == "stsm")
+#   {
+#     if (is.null(args.tsmodel$model))
+#       args.tsmodel$model <- ifelse(frequency(y) == 1, "local-level", "BSM")   
+# 
+# ##FIXME these defaults only if stsm.method = "maxlik.fd.scoring"
+# 
+#     if (is.null(args.tsmodel$ssd))
+#       args.tsmodel$ssd <- TRUE
+#     if (is.null(args.tsmodel$sgfc))
+#       args.tsmodel$sgfc <- TRUE
+#     # let "stsm::stsmFit" handle "xreg", not here
+#     y <- do.call("stsm.model", args = c(list(y = y), args.tsmodel))
+#     #ylist <- list(m = m)
+#   } #else
+#     #ylist <- list(x = y) # m <- y
 
   # if "ylist" or "m <- y" were used, then the "if" statement below where "fit" is 
   # created could be avoided using "do.call(tsmethod, args = c(x = m, list())"
@@ -88,9 +89,9 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   {
     args.tsmethod <- switch(tsmethod,
       "auto.arima" = list(allowdrift = FALSE, ic = "bic"),
-      "arima" = list(order = c(0, 1, 1), seasonal = list(order = c(0, 1, 1))),
-      "stsm" = list(stsm.method = "maxlik.td.optim", method = "L-BFGS-B",
-        KF.version = "KFKSDS", KF.args = list(P0cov = TRUE), gr = "numerical")) #hessian = TRUE
+      "arima" = list(order = c(0, 1, 1), seasonal = list(order = c(0, 1, 1))))#,
+      #"stsm" = list(stsm.method = "maxlik.td.optim", method = "L-BFGS-B",
+      #  KF.version = "KFKSDS", KF.args = list(P0cov = TRUE), gr = "numerical")) #hessian = TRUE
       #list(stsm.method = "maxlik.fd.scoring", step = NULL, information = "expected"))
   }
 
@@ -121,11 +122,12 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   # "res0" is also used if maxit = 1
 
   res0 <- res <- tso0(x = y, xreg = xreg, cval = cval, 
-    delta = delta, n.start = n.start,
+    delta = delta, #n.start = n.start,
     types = types, maxit.iloop = maxit.iloop, maxit.oloop = maxit.oloop,
     discard.method = discard.method, discard.cval = discard.cval,
     tsmethod = tsmethod, args.tsmethod = args.tsmethod, 
-    logfile = logfile)
+    logfile = logfile,
+    check.rank=check.rank)
 
   fit.wo.outliers <- res$fit0 # model without outliers (if maxit>1 res0 may change)
   moall <- res$outliers
@@ -139,12 +141,13 @@ tso <- function(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
   {
 ##FIXME see move res0 <- res after if(...) break
 
-if (tsmethod == "stsm")
-{
-##FIXME TODO create stsm object based on res$yadj as done above
-  warning("currently ", sQuote("maxit"), " > 1 is not allowed for ", sQuote("tsmethod=\"stsm\""))
-  break
-}
+#if (tsmethod == "stsm")
+#{
+# ##FIXME TODO create stsm object based on res$yadj as done above
+#  warning("currently ", sQuote("maxit"), " > 1 is not allowed for ", sQuote("tsmethod=\"stsm\""))
+#  break
+#}
+
     # save "res" to have a copy of the last fitted model, res$fit;
     # if in the current run no outliers are found then 
     # tso0() does not return the fitted model
@@ -152,11 +155,12 @@ if (tsmethod == "stsm")
     res0 <- res
 
     res <- tso0(x = res$yadj, xreg = xreg, cval = cval, 
-      delta = delta, n.start = n.start,
+      delta = delta, #n.start = n.start,
       types = types, maxit.iloop = maxit.iloop, 
       discard.method = discard.method, discard.cval = discard.cval, 
       tsmethod = tsmethod, args.tsmethod = args.tsmethod, 
-      logfile = logfile)
+      logfile = logfile,
+      check.rank = check.rank)
 
 ##FIXME check
     #discard (remove) duplicates and outliers at consecutive type points (if any)
@@ -195,15 +199,16 @@ if (tsmethod == "stsm")
     #rather than the series adjusted for outliers
 
     pars <- switch(tsmethod, 
-      "auto.arima" = , "arima" = coefs2poly(res0$fit),
-      "stsm" = stsm::char2numeric(res0$fit$model))
+      "auto.arima" = , "arima" = coefs2poly(res0$fit))#,
+      #"stsm" = stsm::char2numeric(res0$fit$model))
 
     # 'xreg': input regressor variables such as calendar effects (if any)
     # 'xreg.outl': outliers regressor variables detected above (if any)
     # 'xregall': all regressors ('xreg' and 'xreg.outl')
 
     xreg.outl <- outliers.effects(mo = moall, n = n, weights = FALSE, delta = delta, 
-      pars = pars, n.start = n.start, freq = frequency(y))
+      pars = pars, #n.start = n.start, 
+      freq = frequency(y))
     xregall <- cbind(xreg, xreg.outl)
     nms.outl <- colnames(xreg.outl)
     colnames(xregall) <- c(colnames(xreg), nms.outl)
@@ -211,29 +216,29 @@ if (tsmethod == "stsm")
     ##NOTE
     # rerunning "auto.arima" (model selection) may not be necessary at this point
 
-    if (tsmethod == "stsm") {
-      fit <- do.call("stsmFit", args = c(list(x = y, xreg = xregall), args.tsmethod))
-    } else {
+    #if (tsmethod == "stsm") {
+    #  fit <- do.call("stsmFit", args = c(list(x = y, xreg = xregall), args.tsmethod))
+    #} else {
       fit <- do.call(tsmethod, args = c(list(x = y, xreg = xregall), args.tsmethod))
       # this is for proper printing of results from "auto.arima" and "arima"
       fit$series <- yname
-    }
+    #}
 
     id <- colnames(xreg.outl)
-    if (tsmethod == "stsm")
-    {
-##FIXME TODO 
-#if xregall!=xreg.outl (i.e. argument xreg is not NULL)
-#       xregcoefs <- fit$xreg$coef
-#       stde <- fit$xreg$stde
-#       if (is.null(stde))
-#         stde <- sqrt(diag(vcov(fit, type = "optimHessian")))
-      xregcoefs <- fit$pars[id]
-      tstats <- xregcoefs / fit$std.errors[id]
-    } else { # method "auto.arima", "arima"
-      xregcoefs <- coef(fit)[id]
-      tstats <- xregcoefs / sqrt(diag(fit$var.coef)[id])
-    }
+#     if (tsmethod == "stsm")
+#     {
+# ##FIXME TODO 
+# #if xregall!=xreg.outl (i.e. argument xreg is not NULL)
+# #       xregcoefs <- fit$xreg$coef
+# #       stde <- fit$xreg$stde
+# #       if (is.null(stde))
+# #         stde <- sqrt(diag(vcov(fit, type = "optimHessian")))
+#       xregcoefs <- fit$pars[id]
+#       tstats <- xregcoefs / fit$std.errors[id]
+#     } else { # method "auto.arima", "arima"
+     xregcoefs <- coef(fit)[id]
+     tstats <- xregcoefs / sqrt(diag(fit$var.coef)[id])
+#     }
 
     moall[,"coefhat"] <- xregcoefs
     moall[,"tstat"] <- tstats
@@ -254,11 +259,12 @@ if (tsmethod == "stsm")
     class = "tsoutliers")
 }
 
-tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
+tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, #n.start = 50,
   types = c("AO", "LS", "TC"), maxit.iloop = 4, maxit.oloop = 4, 
   discard.method = c("en-masse", "bottom-up"), discard.cval = NULL, 
-  tsmethod = c("auto.arima", "arima", "stsm"), args.tsmethod = NULL,
-  args.tsmodel = NULL, logfile = NULL)
+  tsmethod = c("auto.arima", "arima"),#, "stsm"), 
+  args.tsmethod = NULL, #args.tsmodel = NULL, 
+  logfile = NULL, check.rank = FALSE)
 {
   # "x" can be either a "ts" object or a "stsm" object;
   # if !inherits(x, "stsm") then two identical objects are stored ("x" and "y")
@@ -268,8 +274,10 @@ tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
   #discard.method <- match.arg(discard.method)
   #tsmethod <- match.arg(tsmethod)
   #discard.method <- match.arg(discard.method)
-  fitmethod <- gsub("stsm", "stsmFit", tsmethod)
-
+  #
+  #fitmethod <- gsub("stsm", "stsmFit", tsmethod)
+  fitmethod <- tsmethod
+  
   if (is.null(discard.cval))
     discard.cval <- cval
 
@@ -290,7 +298,7 @@ tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
 
   stage1 <- locate.outliers.oloop(y = y, fit = fit, types = types, cval = cval, 
     maxit.iloop = maxit.iloop, maxit.oloop = maxit.oloop, 
-    delta = delta, n.start = n.start, logfile = logfile)
+    delta = delta, logfile = logfile) #n.start = n.start
 
   # choose and fit the model including the outlier regressors detected so far
   # (the weights of the outliers is fine tuned, to see it 
@@ -300,8 +308,9 @@ tso0 <- function(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
   if (nrow(stage1$outliers) > 0)
   {
     stage2 <- discard.outliers(x = stage1, y = y, cval = discard.cval, 
-      method = discard.method, delta = delta, n.start = n.start, 
-      tsmethod.call = fit$call, fdiff = NULL, logfile = logfile)
+      method = discard.method, delta = delta, #n.start = n.start, 
+      tsmethod.call = fit$call, fdiff = NULL, logfile = logfile,
+      check.rank = check.rank)
 
 #moall <- stage2$outliers
 stopifnot(ncol(stage2$xreg) == length(stage2$xregcoefs))

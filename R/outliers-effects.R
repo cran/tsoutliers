@@ -7,27 +7,25 @@
 ##NOTE
 # argument "pars" is required only for "IOeffect";
 # "pars" can be NULL, thus it is not appropriate to use it to dispatch 
-# between method "outliers.effects.ArimaPars" or "outliers.effects.stsmSS" 
+# between method "outliers.effects.ArimaPars" or "outliers.effects.stsmSS",
 # as done for example with function "outliers.regressors";
 # nevertheless, the argument "tsmethod" can be avoided by using 
 # the name of the class of "pars" ("ArimaPars" or "stsmSS")
 
 outliers.effects <- function(mo, n, weights = FALSE, delta = 0.7, 
-  pars = NULL, n.start = 50, freq = 12)
+  pars = NULL, freq = 12) #n.start = 50
 {
   # effects of outliers on the original series
   # variables in equation (19) in Chen-Liu (1993)
   # see equations (2) and (4) in the document attached to the package
 
-  IOeffect <- function(n, ind, pars, w = 1, n.start = 50)
+  IOeffect <- function(n, ind, pars, w = 1) #n.start = 50
   {
     if (!identical(w, 1))
       stopifnot(length(ind) == length(w))
 
     msg <- paste("argument", sQuote("pars"), "should be of class", 
-      sQuote("ArimaPars"), "or", sQuote("stsmSS")) 
-      #"\n       see", sQuote("?coefs2poly"), "in package", sQuote("tsoutliers"),
-      #"or", sQuote("?char2numeric"), "in package", sQuote("stsm"))
+      sQuote("ArimaPars")) #, "or", sQuote("stsmSS")) 
 
     if (inherits(pars, "list"))
     {
@@ -35,12 +33,12 @@ outliers.effects <- function(mo, n, weights = FALSE, delta = 0.7,
       if (all(c("arcoefs", "macoefs") %in% tmp)) {
         pars <- structure(pars, class = "ArimaPars")
       } else 
-      if (all(c("Z", "T", "H") %in% tmp)) {
-        pars <- structure(pars, class = "stsmSS")
-      } else
+      #if (all(c("Z", "T", "H") %in% tmp)) {
+      #  pars <- structure(pars, class = "stsmSS")
+      #} else
         stop(msg)
 
-      IOeffect(n = n, ind = ind, pars = pars, w = w, n.start = n.start)
+      IOeffect(n = n, ind = ind, pars = pars, w = w) #n.start = n.start
     }
 
     if (inherits(pars, "ArimaPars"))
@@ -51,32 +49,37 @@ outliers.effects <- function(mo, n, weights = FALSE, delta = 0.7,
       m <- matrix(0, nrow = n, ncol = length(ind))
       m[n * seq.int(0, ncol(m) - 1) + ind] <- w
 ##FIXME see na.omit in the presence of outliers in "x"
+      #NOTE fixed 18/02/2019: f = c(1, -mas) > f = c(1, mas)
       m <- apply(m, 2, function(x, f, nm1) na.omit(filter(c(rep(0, nm1), x), 
-        filter = f, method = "conv", sides = 1)), f = c(1, -mas), nm1 = n - 1)
+        filter = f, method = "conv", sides = 1)), f = c(1, mas), nm1 = n - 1)
     } else 
-    if (inherits(pars, "stsmSS"))
-    {
+      stop(msg)
+    
+    # in order to enable this part, uncomment and paste it above, before 'stop(msg)'
+    #
+    #if (inherits(pars, "stsmSS"))
+    #{
 ##FIXME is this always unit impulse? if so redo without running KF
-
+    #
 ##FIXME if for w=1, they are just lagged versions, if so, redo running KF only once
 #check it also in tsmethod == "arima"
-      m <- matrix(0, nrow = n, ncol = length(ind))
-      #m[n * seq.int(0, ncol(m) - 1) + ind] <- w
-      #if (w[i] != 1)
-      #  f <- f * w[i]
-      I <- rep(0, n + n.start)
-      for (i in seq_along(ind))
-      {
-        #I <- ts(rep(0, n + n.start), start = start(resid), frequency = frequency(resid))
-        I[] <- 0  
-        I[n.start] <- 1
-        tmp <- KFKSDS::KF(I, pars)
-        f <- tmp$v[-seq.int(n.start-1)]
-##FIXME see how to avoid remove last element this way (see doc)
-        m[,i] <- f[-length(f)]
-      }
-    } else
-      stop(msg)
+    #  m <- matrix(0, nrow = n, ncol = length(ind))
+    #  #m[n * seq.int(0, ncol(m) - 1) + ind] <- w
+    #  #if (w[i] != 1)
+    #  #  f <- f * w[i]
+    #  I <- rep(0, n + n.start)
+    #  for (i in seq_along(ind))
+    #  {
+    #    #I <- ts(rep(0, n + n.start), start = start(resid), frequency = frequency(resid))
+    #    I[] <- 0  
+    #    I[n.start] <- 1
+    #    tmp <- KFKSDS::KF(I, pars)
+    #    f <- tmp$v[-seq.int(n.start-1)]
+    #FIXME see avoid this operation for removing last element
+    #    m[,i] <- f[-length(f)]
+    #  }
+    #} else
+    #  stop(msg)
     m
   }
 
@@ -143,7 +146,7 @@ outliers.effects <- function(mo, n, weights = FALSE, delta = 0.7,
   if (length(indio <- which(mo[,"type"] == "IO")) > 0)
   {
     oeff[,indio] <- IOeffect(n = n, ind = mo[indio,"ind"], pars = pars, 
-        w = mo[indio,"coefhat"], n.start = n.start)
+        w = mo[indio,"coefhat"]) #n.start = n.start)
   }
 
   if (length(indao <- which(mo[,"type"] == "AO")) > 0)

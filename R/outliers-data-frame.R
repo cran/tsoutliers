@@ -1,5 +1,5 @@
 
-# currently "outliers" is not used by the functions in the package
+# currently "outliers" is not used by the functions in the package,
 # but it may be useful to define the input of some functions, 
 # e.g. argument "mo" in functions "outliers.effects" and "outliers.regressors"
 

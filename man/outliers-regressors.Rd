@@ -10,7 +10,7 @@ regression where tests for presence will be applied.
 
 \usage{
 outliers.regressors(pars, mo, n, weights = TRUE,
-  delta = 0.7, freq = 12, n.start = 50)
+  delta = 0.7, freq = 12)
 }
 
 \arguments{
@@ -31,8 +31,6 @@ unit weights are considered.}
 \item{delta}{a numeric. Parameter of the temporary change type of outlier.}
 \item{freq}{a numeric. The periodicity of the data. 
 Used only for the seasonal level shift, \code{"SLS"}.}
-\item{n.start}{a numeric. The number of warming observations added to the 
-input passed to the Kalman filter. Only for \code{pars} of class \code{"stsmSS"}.}
 }
 
 \details{

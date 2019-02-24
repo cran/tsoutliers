@@ -1,13 +1,13 @@
 
 ##FIXME
-# see add argument "duplicates.remove = TRUE" as an option 
+# consider adding argument "duplicates.remove = TRUE" as an option 
 # for non-automatic inspection of the procedure
 
 # types of outliers
 # types = c("IO", "AO", "LS", "TC", "SLS")
 
 locate.outliers <- function(resid, pars, cval = 3.5, 
-  types = c("AO", "LS", "TC"), delta = 0.7, n.start = 50)
+  types = c("AO", "LS", "TC"), delta = 0.7) #n.start = 50
 {
   # mean absolute deviation of residuals
 
@@ -19,7 +19,7 @@ locate.outliers <- function(resid, pars, cval = 3.5,
   # selected types of outliers
 
   tmp <- outliers.tstatistics(pars = pars, resid = resid, 
-    types = types, sigma = sigma, delta = delta, n.start = n.start)
+    types = types, sigma = sigma, delta = delta) #n.start = n.start
 
   #ind <- which(abs(tmp[,,"tstat"]) > cval, arr.ind = TRUE)
   #mo <- data.frame(
@@ -111,7 +111,7 @@ locate.outliers <- function(resid, pars, cval = 3.5,
 }
 
 locate.outliers.iloop <- function(resid, pars, cval = 3.5, 
-  types = c("AO", "LS", "TC"), maxit = 4, delta = 0.7, n.start = 50,
+  types = c("AO", "LS", "TC"), maxit = 4, delta = 0.7, #n.start = 50,
   logfile = NULL)
 {
   if(!is.ts(resid))
@@ -128,7 +128,7 @@ locate.outliers.iloop <- function(resid, pars, cval = 3.5,
   while (iter < maxit)
   {
     mo <- locate.outliers(resid = resid, pars = pars, cval = cval, 
-      types = types, delta = delta, n.start = n.start)
+      types = types, delta = delta) #n.start = n.start
 
     if (!is.null(logfile))
     {
@@ -207,7 +207,7 @@ locate.outliers.iloop <- function(resid, pars, cval = 3.5,
     # only the current 'mo' would be modified before updating the vector 'resid'
 
     oxreg <- outliers.regressors(pars = pars, mo = mo, n = n, weights = TRUE,
-      delta = delta, freq = s, n.start = n.start)
+      delta = delta, freq = s) #n.start = n.start
 
     #resid0 <- resid
     resid <- resid - rowSums(oxreg)
@@ -228,7 +228,7 @@ locate.outliers.iloop <- function(resid, pars, cval = 3.5,
 }
 
 locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"), 
-  cval = NULL, maxit.iloop = 4, maxit.oloop = 4, delta = 0.7, n.start = 50, logfile = NULL)
+  cval = NULL, maxit.iloop = 4, maxit.oloop = 4, delta = 0.7, logfile = NULL) #n.start = 50
 {
   n <- length(y)
   s <- frequency(y)
@@ -254,8 +254,10 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
 
   # tail(): take the last element just in case fit$call[[1]] is 
   # for example "forecast::auto.arima"
-  tsmethod <- ifelse(inherits(fit, "stsmFit"), 
-    "stsm", tail(as.character(fit$call[[1]]), 1))
+  #tsmethod <- ifelse(inherits(fit, "stsmFit"), 
+  #  "stsm", tail(as.character(fit$call[[1]]), 1))
+  tsmethod <- tail(as.character(fit$call[[1]]), 1)
+  
   #s <- frequency(y)
   moall <- data.frame(matrix(nrow = 0, ncol=4, 
     dimnames = list(NULL, c("type", "ind", "coefhat", "tstat"))))
@@ -267,9 +269,9 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
     tmp <- fit$arma[6] + fit$arma[5] * fit$arma[7]
     id0resid <- if (tmp > 1) seq.int(tmp) else c(1, 2)
   } else 
-  if (inherits(fit, "stsmFit")) {
-    id0resid <- seq_len(n - length(fit$model@diffy))
-  } else
+  #if (inherits(fit, "stsmFit")) {
+  #  id0resid <- seq_len(n - length(fit$model@diffy))
+  #} else
     stop("unexpected type of fitted model")
 
   # begin outer loop
@@ -281,8 +283,8 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
     # parameter estimates and residuals
 
     pars <- switch(tsmethod, 
-      "auto.arima" = , "arima" = coefs2poly(fit),
-      "stsm" = stsm::char2numeric(fit$model))
+      "auto.arima" = , "arima" = coefs2poly(fit))
+      #"stsm" = stsm::char2numeric(fit$model))
 
     ##NOTE by default residuals(fit, standardised = FALSE) 
     # only relevant for "stsm" but the argument could set here 
@@ -316,7 +318,7 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
     # locate possible outliers
 
     mo <- locate.outliers.iloop(resid = resid, pars = pars, cval = cval, 
-      types = types, maxit = maxit.iloop, delta = delta, n.start = n.start, 
+      types = types, maxit = maxit.iloop, delta = delta, #n.start = n.start, 
       logfile = logfile)
 
     # discard outliers identified at consecutive time points (if any)
@@ -405,7 +407,7 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
     # fit the model for the adjusted series
 
     oeff <- outliers.effects(mo = mo, n = n, weights = TRUE, 
-      delta = delta, pars = pars, n.start = n.start, freq = s)
+      delta = delta, pars = pars, freq = s) #n.start = n.start
 
     # 'y' is overwritten; 'oeff' is based on 'mo' not 'moall'
 
@@ -415,12 +417,12 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
 ##FIXME 
 #if 'fit' includes intercept or drift, pass here (it could be done based on names of coef(fit))
 
-       # do not modify and evaluate the call, i.e. do not run eval(fit$call)
-       # since it will run the model selection procedure (if tsmethod = "auto.arima")
-       # here we only want to refit the model (not choose or select a model)
+      # do not modify and evaluate the call, i.e. do not run eval(fit$call)
+      # since it will run the model selection procedure (if tsmethod = "auto.arima")
+      # here we only want to refit the model (not choose or select a model)
 
-       "auto.arima" = fit <- arima(y, order = fit$arma[c(1,6,2)], 
-         seasonal = list(order = fit$arma[c(3,7,4)])),
+      "auto.arima" = fit <- arima(y, order = fit$arma[c(1,6,2)], 
+        seasonal = list(order = fit$arma[c(3,7,4)])),
 
       # this reuses arguments passed to the optimization method, e.g. method = "CSS",
       # if they were specified when the input object "fit" was created,
@@ -432,23 +434,23 @@ locate.outliers.oloop <- function(y, fit, types = c("AO", "LS", "TC"),
         # rename fitcall$series since it can be a very long character string to store
         #fitcall$series <- "x"
         fit <- eval(fitcall)
-      },
+      }#,
 
-      "stsm" = {
-        fitcall <- fit$call
-        ##NOTE
-        # fitcall$x contains the model, not fitcall$m, since now "stsmFit" is called 
-        # instead of "maxlik.td.optim" and the other functions
-        fitcall$x@y <- y
-        dy <- fitcall$x@fdiff(y, frequency(y))
-        fitcall$x@diffy <- dy
-        if (!is.null(fitcall$x@ssd))
-          fitcall$x@ssd <- Mod(fft(as.numeric(dy)))^2 / (2*pi*length(dy))
-        ##NOTE
-        #last parameter estimates, fit$pars, could be used as starting values
-        #fitcall$x@pars[] <- fit$pars
-        fit <- eval(fitcall)
-      }
+      #"stsm" = {
+      #  fitcall <- fit$call
+      #  ##NOTE
+      #  # fitcall$x contains the model, not fitcall$m, since now "stsmFit" is called 
+      #  # instead of "maxlik.td.optim" and the other functions
+      #  fitcall$x@y <- y
+      #  dy <- fitcall$x@fdiff(y, frequency(y))
+      #  fitcall$x@diffy <- dy
+      #  if (!is.null(fitcall$x@ssd))
+      #    fitcall$x@ssd <- Mod(fft(as.numeric(dy)))^2 / (2*pi*length(dy))
+      #  ##NOTE
+      #  #last parameter estimates, fit$pars, could be used as starting values
+      #  #fitcall$x@pars[] <- fit$pars
+      #  fit <- eval(fitcall)
+      #}
     )
 
     if (!is.null(logfile))

@@ -10,29 +10,27 @@ procedure provided in this package.
 }
 
 \usage{
-tso(y, xreg = NULL, cval = NULL, delta = 0.7, n.start = 50,
+tso(y, xreg = NULL, cval = NULL, delta = 0.7, 
   types = c("AO", "LS", "TC"), 
   maxit = 1, maxit.iloop = 4, maxit.oloop = 4, cval.reduce = 0.14286, 
   discard.method = c("en-masse", "bottom-up"), discard.cval = NULL, 
   remove.method, remove.cval,
-  tsmethod = c("auto.arima", "arima", "stsm"), 
-  args.tsmethod = NULL, args.tsmodel = NULL, logfile = NULL)
+  tsmethod = c("auto.arima", "arima"), 
+  args.tsmethod = NULL, logfile = NULL, check.rank = FALSE)
 
-tso0(x, xreg = NULL, cval = 3.5, delta = 0.7, n.start = 50,
+tso0(x, xreg = NULL, cval = 3.5, delta = 0.7, 
   types = c("AO", "LS", "TC"), maxit.iloop = 4, maxit.oloop = 4,
   discard.method = c("en-masse", "bottom-up"), discard.cval = NULL,   
-  tsmethod = c("auto.arima", "arima", "stsm"), args.tsmethod = NULL,
-  args.tsmodel = NULL, logfile = NULL)
+  tsmethod = c("auto.arima", "arima"), args.tsmethod = NULL, 
+  logfile = NULL, check.rank = FALSE)
 }
 
 \arguments{
 \item{y}{a time series where outliers are to be detected.}
-\item{x}{a time series or an \code{\link[stsm]{stsm}} object.}
+\item{x}{a time series object.}
 \item{xreg}{an optional matrix of regressors with the same number of rows as \code{y}.}
 \item{cval}{a numeric. The critical value to determine the significance of each type of outlier.}
 \item{delta}{a numeric. Parameter of the temporary change type of outlier.}
-\item{n.start}{a numeric. The number of warming observations added to the 
-input passed to the Kalman filter. Only for \code{tsmethod = "stsm"}.}
 \item{types}{a character vector indicating the type of outlier to be considered by the 
 detection procedure: innovational outliers (\code{"IO"}), additive outliers (\code{"AO"}), 
 level shifts (\code{"LS"}), temporary changes (\code{"TC"}) 
@@ -54,10 +52,13 @@ set equal to \code{cval}. See details.}
 of the function to which the arguments defined in \code{args.tsmethod} are referred to.}
 \item{args.tsmethod}{an optional list containing arguments to be passed to 
 the function invoking the method selected in \code{tsmethod}.}
-\item{args.tsmodel}{an optional list containing the arguments to be passed to 
-\code{\link[stsm]{stsm.model}}. Only for \code{tsmethod = "stsm"}}.
+%\item{args.tsmodel}{an optional list containing the arguments to be passed to 
+%\code{\link[stsm]{stsm.model}}. Only for \code{tsmethod = "stsm"}}.
 \item{logfile}{a character or \code{NULL}. It is the path to the file where 
 tracking information is printed. Ignored if \code{NULL}.}
+\item{check.rank}{logical. If \code{TRUE} the regressors are checked for perfect collinearity.
+The variables related to coefficients that turn out to be \code{NA} due to possible 
+perfect collinearity are discarded.}
 }
 
 \details{
@@ -91,15 +92,12 @@ otherwise \code{cval} is set equal to \eqn{3 + 0.0025 * (n - 50)}.
 If \code{tsmethod} is \code{NULL}, the following default arguments are used in the 
 function selected in \code{tsmethod}:
 \code{tsmethod = "auto.arima"}: \code{allowdrift = FALSE}, \code{ic = "bic"};
-\code{tsmethod = "arima"} = \code{order = c(0, 1, 1)} \code{seasonal = list(order = c(0, 1, 1))};
-\code{tsmethod = "stsm"} = \code{stsm.method = "maxlik.fd.scoring"}, \code{step = NULL}, 
-\code{information = "expected"}.
+\code{tsmethod = "arima"} = \code{order = c(0, 1, 1)} \code{seasonal = list(order = c(0, 1, 1))}.
 
 If \code{args.tsmethod} is \code{NULL}, the following lists are used by default,
 respectively for each method:
 \code{auto.arima}: \code{list(allowdrift = FALSE, ic = "bic")};
-\code{arima}: \code{list(order = c(0, 1, 1), seasonal = list(order = c(0, 1, 1)))}:
-\code{stsm}: \code{list(stsm.method = "maxlik.fd.scoring", step = NULL, information = "expected"))}.
+\code{arima}: \code{list(order = c(0, 1, 1), seasonal = list(order = c(0, 1, 1)))}.
 
 \code{xreg} must be a matrix with time series attributes, \code{\link[stats]{tsp}}, 
 that must be the same same as \code{tsp(x)}. Column names are also compulsory.
@@ -112,13 +110,6 @@ is passed to function that fits the model. The function \code{tso}
 deals with this possibility and returns a warning if \code{"xreg"} is defined 
 twice with different values. No checks are done in \code{tso0}.
   
-If \code{tsmethod = "stsm"}, the structural time series model can be defined 
-through argument \code{args.tsmodel}, which is passed to function 
-\code{\link[stsm]{stsm.model}}.
-By default, the local level model is chosen for series with one sample per unit 
-of time (e.g. annual data) and the basic structural model for seasonal data; 
-\code{ssd = TRUE} and \code{sgfc = TRUE}.
-
 If \code{maxit = 1} the procedure is run only once on the original series.
 If \code{maxit > 1} the procedure is run iteratively, first for the original series 
 and then for the adjusted series. The critical value used for the adjusted series 
