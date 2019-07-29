@@ -94,8 +94,6 @@ outliers.effects <- function(mo, n, weights = FALSE, delta = 0.7,
 
   LSeffect <- function(n, ind, w = 1)
   {
-    if (!identical(w, 1))
-      stopifnot(length(ind) == length(w))
     if (!identical(w, 1)) {
       stopifnot(length(ind) == length(w))
     } else
