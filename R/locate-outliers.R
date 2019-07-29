@@ -125,10 +125,13 @@ locate.outliers.iloop <- function(resid, pars, cval = 3.5,
 
   # begin inner loop
 
-  while (iter < maxit)
+  while (is.null(maxit) || iter < maxit)
   {
     mo <- locate.outliers(resid = resid, pars = pars, cval = cval, 
       types = types, delta = delta) #n.start = n.start
+
+    mo <- mo[which.max(abs(mo$tstat)),]
+    mo <- mo[which(abs(mo$tstat)>cval),]
 
     if (!is.null(logfile))
     {
@@ -139,28 +142,28 @@ locate.outliers.iloop <- function(resid, pars, cval = 3.5,
 
     cond <- nrow(mo) > 0
 
-    # discard outliers identified at consecutive time points (if any)
+    ## discard outliers identified at consecutive time points (if any)
+    ##
+    ##changed in version 0.6-5: 
+    ## this cleaning is now done here and in locate.outliers.oloop() instead 
+    ## of in locate.outliers()
+    ## in addition to LS, other types of outliers are also checked 
     #
-    #changed in version 0.6-5: 
-    # this cleaning is now done here and in locate.outliers.oloop() instead 
-    # of in locate.outliers()
-    # in addition to LS, other types of outliers are also checked 
-
-    if (cond)
-    {
-      rmid <- c(
-        find.consecutive.outliers(mo, "IO"),
-        find.consecutive.outliers(mo, "AO"),
-        find.consecutive.outliers(mo, "LS"),
-        find.consecutive.outliers(mo, "TC"),
-        find.consecutive.outliers(mo, "SLS"))
-
-      if (length(rmid) > 0)
-      # do not use is.null(rmid), 'rmid' may be NULL or 'character(0)'
-      {
-         mo <- mo[-rmid,]
-      }
-    }
+    #if (cond)
+    #{
+    #  rmid <- c(
+    #    find.consecutive.outliers(mo, "IO"),
+    #    find.consecutive.outliers(mo, "AO"),
+    #    find.consecutive.outliers(mo, "LS"),
+    #    find.consecutive.outliers(mo, "TC"),
+    #    find.consecutive.outliers(mo, "SLS"))
+    #
+    #  if (length(rmid) > 0)
+    #  # do not use is.null(rmid), 'rmid' may be NULL or 'character(0)'
+    #  {
+    #     mo <- mo[-rmid,]
+    #  }
+    #}
 
     # remove duplicates in 'moall' and in 'mo' (last and current iterations)
     #
@@ -209,18 +212,20 @@ locate.outliers.iloop <- function(resid, pars, cval = 3.5,
     oxreg <- outliers.regressors(pars = pars, mo = mo, n = n, weights = TRUE,
       delta = delta, freq = s) #n.start = n.start
 
-    #resid0 <- resid
-    resid <- resid - rowSums(oxreg)
-
+    resid <- resid - oxreg[,1]
+    
     iter <- iter + 1
   } # end while
 
   # in practice this warning may be ignored or inspected further 
   # for example incrementing the value of "maxit"
 
-  if (iter == maxit)
-    warning(paste("stopped when", sQuote("maxit.iloop"), "was reached"))
-
+  if (!is.null(maxit))
+  {
+    if (iter == maxit)
+      warning(paste("stopped when", sQuote("maxit.iloop"), "was reached"))
+  }
+  
 ##FIXME
 # see return "iter"
 
