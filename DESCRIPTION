@@ -1,6 +1,6 @@
 Package: tsoutliers
-Version: 0.6-8
-Date: 2019-02-24
+Version: 0.6-10
+Date: 2024-02-10
 Title: Detection of Outliers in Time Series
 Description: Detection of outliers in time series following the 
     Chen and Liu (1993) <DOI:10.2307/2290724> procedure. 
@@ -11,9 +11,10 @@ Maintainer: Javier López-de-Lacalle <javlacalle@yahoo.es>
 Depends: R (>= 3.0.0)
 Imports: forecast, stats
 NeedsCompilation: no
+LazyData: true
 Encoding: UTF-8
 License: GPL-2
 URL: https://jalobe.com
-Packaged: 2019-02-24 18:12:39 UTC; javlacalle
+Packaged: 2024-02-10 22:05:28 UTC; javlacalle
 Repository: CRAN
-Date/Publication: 2019-02-24 22:00:03 UTC
+Date/Publication: 2024-02-12 12:00:02 UTC

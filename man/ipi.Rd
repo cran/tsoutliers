@@ -42,8 +42,8 @@ or working day adjusted data are available for this country.
 
 \source{
 EUROSTAT. Statistical Office of the European Communities. 
-\url{http://ec.europa.eu/eurostat}.
-%\url{http://epp.eurostat.ec.europa.eu/portal/page/portal/statistics/search_database}.
+\url{https://ec.europa.eu/eurostat}.
+%\url{https://epp.eurostat.ec.europa.eu/portal/page/portal/statistics/search_database}.
 }
 
 \keyword{datasets}

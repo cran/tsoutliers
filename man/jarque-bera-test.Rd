@@ -88,4 +88,4 @@ fit2 <- arima(y, order = c(1, 1, 0), seasonal = list(order = c(2, 0, 2)),
 JarqueBera.test(fit2)
 }
 
-\keyword{ts, htest}
+\keyword{htest}

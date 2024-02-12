@@ -60,4 +60,4 @@ coef(fit)
 coefs2poly(fit)
 }
 
-\keyword{ts, math, symbolmath}
+\keyword{ts}

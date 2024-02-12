@@ -1,6 +1,6 @@
 \name{tsoutliers-package}
 \docType{package}
-\alias{tsouliers-package}
+\alias{_PACKAGE}
 
 \title{Automatic Detection of Outliers in Time Series}
 
@@ -75,12 +75,12 @@ Gómez, V. and Taguas, D. (1995).
 \emph{Detección y Corrección Automática de Outliers con TRAMO: 
 Una Aplicación al IPC de Bienes Industriales no Energéticos}.
 Ministerio de Economía y Hacienda. Document number D-95006.
-\url{http://www.sepg.pap.minhap.gob.es/sitios/sepg/es-ES/Presupuestos/Documentacion/Documents/DOCUMENTOS\%20DE\%20TRABAJO/D95006.pdf}
+\url{https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/Presupuestos/DocumentacionEstadisticas/Documentacion/Documents/DOCUMENTOS\%20DE\%20TRABAJO/D95006.pdf}
 
 Hyndman, R.J. and Khandakar, Y. (2008). 
 \sQuote{Automatic Time Series Forecasting: The \pkg{forecast} Package for \R}.
 \emph{Journal of Statistical Software}, \bold{27}(3), pp. 1-22.
-\url{http://www.jstatsoft.org/v27/i03}
+\url{https://www.jstatsoft.org/v27/i03}
 
 Hyndman, R.J. with contributions from 
 George Athanasopoulos, Slava Razbash, Drew Schmidt, Zhenyu Zhou, Yousaf Khan, 
@@ -90,4 +90,4 @@ Christoph Bergmeir and Earo Wang (2014).
 \url{https://CRAN.R-project.org/package=forecast}
 }
 
-\keyword{package, ts}
+\keyword{package}

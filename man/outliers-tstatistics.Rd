@@ -95,7 +95,7 @@ Gómez, V. and Taguas, D. (1995).
 \emph{Detección y Corrección Automática de Outliers con TRAMO: 
 Una Aplicación al IPC de Bienes Industriales no Energéticos}.
 Ministerio de Economía y Hacienda. Document number D-95006.
-\url{http://www.sepg.pap.minhap.gob.es/sitios/sepg/es-ES/Presupuestos/Documentacion/Documents/DOCUMENTOS\%20DE\%20TRABAJO/D95006.pdf}
+\url{https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/Presupuestos/DocumentacionEstadisticas/Documentacion/Documents/DOCUMENTOS\%20DE\%20TRABAJO/D95006.pdf}
 
 Kaiser, R., and Maravall, A. (1999). 
 \emph{Seasonal Outliers in Time Series}.

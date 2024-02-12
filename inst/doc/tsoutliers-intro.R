@@ -1,5 +1,4 @@
 ### R code from vignette source 'tsoutliers-intro.Rnw'
-### Encoding: UTF-8
 
 ###################################################
 ### code chunk number 1: tsoutliers-intro.Rnw:108-113
